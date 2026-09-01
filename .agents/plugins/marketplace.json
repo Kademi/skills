@@ -1,0 +1,20 @@
+{
+  "name": "kademi",
+  "interface": {
+    "displayName": "Kademi"
+  },
+  "plugins": [
+    {
+      "name": "kademi",
+      "source": {
+        "source": "local",
+        "path": "./plugins/kademi"
+      },
+      "description": "Skills for building on the Kademi platform: repository apps, server-side JavaScript, admin UI, Velocity themes, integrations, journeys, rewards, commerce, security and AI features",
+      "category": "Developer Tools",
+      "policy": {
+        "installation": "AVAILABLE"
+      }
+    }
+  ]
+}

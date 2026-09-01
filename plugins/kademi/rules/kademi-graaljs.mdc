@@ -1,0 +1,37 @@
+---
+description: Rules for Kademi server-side JavaScript running on the GraalJS engine - every .mjs file under APP-INF in a Kademi app, lib or theme.
+alwaysApply: false
+globs:
+  - "**/APP-INF/**/*.mjs"
+---
+
+# Kademi server JS: GraalJS (.mjs)
+
+This file runs **inside the Kademi platform**, in a sandboxed GraalJS engine. It is not Node.
+There is no `require`, no npm, no filesystem, no `java.*`.
+
+Check `APP-INF/controllers.xml`: `.mjs` files load only when the root element declares
+`engineVersion="2.0"`. If it declares `1.1` or omits the attribute, this file is never loaded and
+the app is on Nashorn `.js` instead.
+
+- **Every platform-invoked function must be on `globalThis`.** A module-scoped `function` is
+  invisible to the platform - controller handlers, resolvers, lifecycle callbacks and async task
+  functions all fail silently to resolve.
+- **`console.*` for logging.** A `log` global exists only to ease migration; do not use it here.
+- **Write native modern JavaScript.** `formatter.foreach`, `formatter.eq` and `formatter.isNull`
+  are Nashorn compatibility helpers - use `for...of`, `===` and `?.`. Keep `formatter` for dates,
+  currency, CSV and building Java collections.
+- **`formatter.toJson(obj)`, not `JSON.stringify`, for any Java object** - a Java bean's getters
+  are not enumerable, so `JSON.stringify` returns `{}`.
+- **No `Java.type`, no `java.*`, no fully-qualified class names** - class filtering blocks them at
+  runtime. Use `formatter.newMap()`, `formatter.newArrayList()` or a `services.*` method.
+- **Call `securityManager.yield()` inside long loops** or the CPU governor cannot interrupt the
+  request.
+- **Nothing mutable at module scope.** App instances are shared across accounts; use
+  `controllerMappings.cacheBuilder()` with `getCacheValue`, which scopes keys per organisation.
+
+`services`, `formatter`, `controllerMappings`, `views` and `page` are Java objects dispatched
+dynamically - nothing checks a method name until that line runs. Confirm any member at
+`https://docs.kademi.co/ref/templating/md/<ClassName>.md` before calling it.
+
+Full guidance: the `kademi-server-js` skill, and its `references/graaljs.md`.

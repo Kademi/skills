@@ -1,0 +1,36 @@
+---
+description: Rules for Kademi server-side JavaScript running on the legacy Nashorn engine - every .js file under APP-INF in a Kademi app, lib or theme.
+alwaysApply: false
+globs:
+  - "**/APP-INF/**/*.js"
+---
+
+# Kademi server JS: Nashorn (.js)
+
+This file runs **inside the Kademi platform**, in a sandboxed Nashorn engine. It is not Node.
+This is the legacy engine: maintain existing apps here, but write new apps on GraalJS
+(`engineVersion="2.0"` and `.mjs`). Switching an existing app is a rewrite of every file, not a
+config change - do not start one incidentally.
+
+- **Target ES5.1 and declare variables with `var`.** `let` and `const` work only when
+  `controllers.xml` sets `engineVersion="1.1"` explicitly. Avoid arrow functions, `class`,
+  template literals, destructuring and `for...of`.
+- **`formatter.foreach(...)` instead of a native loop.** Native loops do not yield, so the CPU
+  governor cannot interrupt a runaway request.
+- **Never `===` against a Java value.** A Kademi id arrives as a Java `Long`, so `===` against a
+  JS number is always false. Use `formatter.eq(a, b)`, and `formatter.isNull` / `isEmpty` /
+  `isEqual` / `gt` / `lt` for the rest.
+- **`formatter.toJson(obj)`, not `JSON.stringify`, for any Java object** - it returns `{}`.
+- **`log.info('saved {} for {}', id, userId)` with `{}` placeholders.** Not `console.log`, not
+  `print`.
+- **No `Java.type`, no `java.*`, no fully-qualified class names** - class filtering blocks them at
+  runtime. Use `formatter.newMap()`, `formatter.newArrayList()` or a `services.*` method.
+- **Nothing mutable at global scope.** App instances are shared across accounts.
+- Functions referenced only by name from `.addMethod('GET', 'myFn')` look unused to a linter. They
+  are not.
+
+`services`, `formatter`, `controllerMappings`, `views` and `page` are Java objects dispatched
+dynamically - nothing checks a method name until that line runs. Confirm any member at
+`https://docs.kademi.co/ref/templating/md/<ClassName>.md` before calling it.
+
+Full guidance: the `kademi-server-js` skill, and its `references/nashorn.md`.

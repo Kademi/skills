@@ -1,0 +1,14 @@
+{
+  "name": "kademi",
+  "displayName": "Kademi",
+  "version": "0.1.0",
+  "description": "Skills for building on the Kademi platform: repository apps, server-side JavaScript, admin UI, Velocity themes, integrations, journeys, rewards, commerce, security and AI features",
+  "author": {
+    "name": "Kademi",
+    "url": "https://kademi.co"
+  },
+  "homepage": "https://docs.kademi.co/",
+  "repository": "https://github.com/Kademi/skills",
+  "license": "Apache-2.0",
+  "keywords": ["kademi", "repository-apps", "server-side-javascript", "velocity", "graaljs", "nashorn"]
+}

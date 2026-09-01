@@ -1,0 +1,27 @@
+---
+description: Every .html file under a theme folder in a Kademi app is an Apache Velocity template rendered on the server, not a static HTML page.
+alwaysApply: false
+globs:
+  - "**/theme/**/*.html"
+---
+
+# Kademi templates are Velocity, not HTML
+
+Despite the `.html` extension, this file is an **Apache Velocity template rendered on the server**.
+Treating it as static HTML, or reformatting it as such, breaks it.
+
+- `#set`, `#if`, `#foreach`, `#macro`, `#parse` are directives; `$foo` and `${foo}` are references.
+- **An unresolved reference renders as empty, silently.** There is no error - a typo in
+  `$profile.firstNam` produces a blank, and the bug surfaces as an empty email or column.
+- **Escape anything user-supplied** before rendering it. Cookies and headers included. Unescaped
+  output in an admin template is stored XSS aimed at an administrator.
+- Look a service up once at the top - `#set( $dm = $services.dateManagerV1 )` - then use `$dm`.
+- Use the **paginator** framework for long lists and the **standardTable** macro for tables.
+- A number rendering as `4.0`, a macro showing the previous row's data, and
+  "Couldnt parse template file" are all known Velocity traps with known causes.
+
+Template code is a UI surface: keep business logic in a server-side JS service under `APP-INF/`,
+not here.
+
+Full guidance: the `kademi-themes` skill, and its `references/velocity.md`. For admin screens, the
+`kademi-admin-ui` skill.

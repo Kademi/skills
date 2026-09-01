@@ -1,0 +1,28 @@
+{
+  "$schema": "https://code.claude.com/schemas/marketplace.json",
+  "name": "kademi",
+  "owner": {
+    "name": "Kademi",
+    "url": "https://kademi.co"
+  },
+  "description": "Plugins for building on the Kademi platform",
+  "version": "0.1.0",
+  "plugins": [
+    {
+      "name": "kademi",
+      "displayName": "Kademi",
+      "source": "./plugins/kademi",
+      "description": "Skills for building on the Kademi platform: repository apps, server-side JavaScript, admin UI, Velocity themes, integrations, journeys, rewards, commerce, security and AI features",
+      "version": "0.1.0",
+      "author": {
+        "name": "Kademi",
+        "url": "https://kademi.co"
+      },
+      "homepage": "https://docs.kademi.co/",
+      "repository": "https://github.com/Kademi/skills",
+      "license": "Apache-2.0",
+      "category": "development",
+      "keywords": ["kademi", "repository-apps", "server-side-javascript", "velocity", "graaljs", "nashorn"]
+    }
+  ]
+}

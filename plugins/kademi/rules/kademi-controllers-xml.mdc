@@ -1,0 +1,24 @@
+---
+description: controllers.xml is the manifest of a Kademi app - it decides the JS engine, which script files load, and the app's menus, roles and settings page.
+alwaysApply: false
+globs:
+  - "**/APP-INF/controllers.xml"
+---
+
+# Kademi controllers.xml
+
+This file is the app manifest. Two things about it cause most of the confusion:
+
+- **`engineVersion` on the root `<controllers>` element decides the JS engine, for the whole app.**
+  `2.0` means GraalJS and `.mjs`; `1.1` or no attribute means Nashorn and `.js`. You do not get to
+  choose per file, and a `.mjs` file in a `1.1` app is simply never loaded.
+- **A script file only loads if it is listed as a `<source>`.** Adding a file to `APP-INF/` is not
+  enough. Under GraalJS, declare the single `app.mjs` entrypoint and let it `import` the rest;
+  under Nashorn, list every file, and order matters because there are no modules.
+
+Everything else - controllers, services, portlets, components, queries, event listeners - is
+registered from JS by calling methods on the `controllerMappings` global, not declared here.
+
+Changing `engineVersion` on an existing app is a rewrite of every script file in it.
+
+Full guidance: the `kademi-server-js` skill, and its `references/controllers-xml.md`.
