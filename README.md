@@ -26,10 +26,6 @@ skills teach an agent how to build them.
 
 ## Install
 
-The repo is a **plugin marketplace**: it holds one or more plugins under `plugins/`, and declares
-them in the manifest each client reads. Today there is one plugin, `kademi`, carrying the skills
-above.
-
 **Claude Code**
 
 ```
@@ -37,93 +33,48 @@ above.
 /plugin install kademi@kademi
 ```
 
-**Cursor** — a workspace admin imports the repo under Dashboard → Plugins → Import from Repo; the
-plugins then install from your team marketplace.
+**Cursor**
 
-**Codex / ChatGPT** — the repo carries `.agents/plugins/marketplace.json`, so cloning it into a
-workspace makes its plugins available to install.
+Individual: clone the repo and copy the plugin into Cursor's local plugin directory.
 
-**VS Code, Copilot and other [Agent Plugins 1.0](https://agent-plugins.org/specification)
-clients** — each plugin directory is a standalone Agent Plugin. Install
-`plugins/<name>` the way your client installs a plugin directory; the repo root is a marketplace,
-not a plugin, so pointing a client at the root will not work.
+```
+git clone https://github.com/Kademi/skills.git
+cp -r skills/plugins/kademi ~/.cursor/plugins/local/kademi
+```
+
+Whole team: a Teams or Enterprise admin imports `https://github.com/Kademi/skills` under
+Dashboard → Settings → Plugins → Team Marketplaces → Import, and everyone installs it from there.
+
+**Codex / ChatGPT**
+
+Workspace admins import the repo as a team marketplace through Codex plugin management. Otherwise
+add it to your personal marketplace at `~/.agents/plugins/marketplace.json`, or clone the repo into
+the workspace you are working in - Codex reads `.agents/plugins/marketplace.json` from the
+repository root.
+
+**Gemini CLI**
+
+Skills are discovered from `~/.gemini/skills/` (alias `~/.agents/skills/`), or per workspace from
+`.gemini/skills/`.
+
+```
+git clone https://github.com/Kademi/skills.git
+cp -r skills/plugins/kademi/skills/* ~/.gemini/skills/
+```
 
 **Anything else**
 
-Clone the repo and point your agent at `plugins/kademi/skills/`, or copy the skill folders you want
-into wherever your agent loads skills from.
+`plugins/kademi/` is a conformant [Agent Plugins 1.0](https://agent-plugins.org/specification)
+directory, so a client that supports the standard can install it directly - the repo root is a
+marketplace, not a plugin, so point at `plugins/kademi`, not at the root. Failing that, every skill
+is a self-contained folder: copy the ones you want to wherever your agent loads skills from.
 
 ```
 git clone https://github.com/Kademi/skills.git
 ```
 
-## Repository layout
-
-```
-.claude-plugin/marketplace.json     Claude Code marketplace
-.cursor-plugin/marketplace.json     Cursor marketplace (metadata.pluginRoot = plugins)
-.agents/plugins/marketplace.json    Codex / ChatGPT marketplace
-plugins/
-  kademi/                           one plugin
-    plugin.json                     Agent Plugins 1.0 manifest
-    .claude-plugin/plugin.json      Claude Code manifest
-    .cursor-plugin/plugin.json      Cursor manifest
-    .codex-plugin/plugin.json       Codex manifest
-    skills/<skill-name>/SKILL.md    the skills this plugin contributes
-    rules/<name>.mdc                glob-scoped rules (Cursor)
-    mcp.json / .mcp.json            MCP servers, when a plugin has them
-scripts/validate-plugins.mjs        checks the marketplaces against what is on disk
-```
-
-Four manifests per plugin because no single format is read by every client yet. They are small and
-must agree on `name` and `version`; `scripts/validate-plugins.mjs` enforces that.
-
-## Adding a plugin
-
-1. `mkdir -p plugins/<name>` and put its `skills/` and, if it has MCP servers, its MCP config
-   inside.
-2. Copy the four manifests from `plugins/kademi/`, setting `name` to the directory name.
-3. Add one entry per marketplace file:
-   - `.claude-plugin/marketplace.json` — `"source": "./plugins/<name>"`
-   - `.cursor-plugin/marketplace.json` — `"source": "<name>"` (resolved under `metadata.pluginRoot`)
-   - `.agents/plugins/marketplace.json` — `"source": { "source": "local", "path": "./plugins/<name>" }`
-4. Run the validator.
-
-```
-node scripts/validate-plugins.mjs
-```
-
-### Skills and rules are not the same thing
-
-A **skill** activates when its `description` matches the task the developer described. A **rule**
-activates when the agent opens a file matching its `globs`, whatever the task was.
-
-That distinction is why this plugin ships both. "Fix this bug" opens a `.js` file without matching
-any skill description, and the agent needs to know *before it types* that the file is sandboxed
-Nashorn where `===` against a platform id is always false. Four rules cover the cases where the
-file itself is misleading:
-
-| Rule | Fires on | Because |
-|---|---|---|
-| `kademi-graaljs.mdc` | `**/APP-INF/**/*.mjs` | Looks like Node; is a sandboxed GraalJS engine |
-| `kademi-nashorn.mdc` | `**/APP-INF/**/*.js` | Same, plus ES5.1 and Java-value comparison rules |
-| `kademi-velocity.mdc` | `**/theme/**/*.html` | Looks like HTML; is a server-rendered Velocity template |
-| `kademi-controllers-xml.mdc` | `**/APP-INF/controllers.xml` | Decides the engine and which files load at all |
-
-Keep rules short and make them **point at the skill** rather than restate it. A rule is the "you
-are about to get this wrong" note; the skill is the documentation.
-
-**Only Cursor reads them.** Claude Code plugins cannot ship rules - they contribute context through
-skills, agents and hooks - and neither Agent Plugins 1.0 nor Codex defines a rules component. The
-directory is inert in those clients, which is why nothing that only exists in a rule may be
-load-bearing.
-
-### Adding MCP servers
-
-A plugin declares its MCP servers in a file at the plugin root. The clients disagree on the name:
-Agent Plugins 1.0 and Cursor read `mcp.json`, Codex reads `.mcp.json`. **Ship both with the same
-content** - the validator fails if only one is present - and point the Codex manifest at its copy
-with `"mcpServers": "./.mcp.json"`.
+Which skills an agent loads, and when, is decided by each `SKILL.md`'s `description` - see
+[Contributing](CONTRIBUTING.md) for how they are structured.
 
 ## API reference
 
@@ -135,17 +86,8 @@ lookups against the public reference:
 
 ## Contributing
 
-Skills are Markdown only - no scripts, nothing platform-specific. Keep each `SKILL.md` under 500
-lines and move depth into `references/`. Validate with
-[`skills-ref`](https://github.com/agentskills/agentskills/tree/main/skills-ref):
-
-```
-skills-ref validate ./plugins/<plugin>/skills/<skill-name>
-node scripts/validate-plugins.mjs
-```
-
-`scripts/validate-plugins.mjs` is repo tooling, not part of a skill - the no-scripts rule applies to
-what ships inside a plugin.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the repository layout, how to add a plugin or an
+MCP server, how skills and rules differ, and how to validate a change.
 
 ## Licence
 
