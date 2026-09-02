@@ -17,5 +17,6 @@
     "nashorn"
   ],
   "skills": "./skills",
-  "rules": "./rules"
+  "rules": "./rules",
+  "logo": "assets/icon.svg"
 }

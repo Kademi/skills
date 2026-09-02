@@ -17,7 +17,15 @@
       "homepage": "https://docs.kademi.co/",
       "repository": "https://github.com/Kademi/skills",
       "license": "Apache-2.0",
-      "keywords": ["kademi", "repository-apps", "server-side-javascript", "velocity", "graaljs", "nashorn"]
+      "keywords": [
+        "kademi",
+        "repository-apps",
+        "server-side-javascript",
+        "velocity",
+        "graaljs",
+        "nashorn"
+      ],
+      "logo": "assets/icon.svg"
     }
   ]
 }

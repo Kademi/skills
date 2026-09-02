@@ -9,6 +9,22 @@
   "homepage": "https://docs.kademi.co/",
   "repository": "https://github.com/Kademi/skills",
   "license": "Apache-2.0",
-  "keywords": ["kademi", "repository-apps", "server-side-javascript", "velocity", "graaljs", "nashorn"],
-  "skills": "./skills/"
+  "keywords": [
+    "kademi",
+    "repository-apps",
+    "server-side-javascript",
+    "velocity",
+    "graaljs",
+    "nashorn"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Kademi",
+    "developerName": "Kademi",
+    "category": "Developer Tools",
+    "brandColor": "#ED135B",
+    "logo": "./assets/logo.png",
+    "composerIcon": "./assets/icon.svg",
+    "websiteURL": "https://kademi.co"
+  }
 }

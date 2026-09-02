@@ -61,6 +61,25 @@ for (const name of pluginDirs) {
             check(existsSync(sk), `${sk} is missing`);
         }
     }
+    // Asset paths declared in any manifest must exist on disk.
+    const assetFields = [
+        ['plugin.json', ['logo']],
+        ['.cursor-plugin/plugin.json', ['logo']],
+        ['.codex-plugin/plugin.json', ['logo', 'composerIcon', 'screenshots']]
+    ];
+    for (const [manifest, fields] of assetFields) {
+        const mp = join(dir, manifest);
+        if (!existsSync(mp)) continue;
+        const j = read(mp);
+        const src = { ...j, ...(j.interface ?? {}) };
+        for (const f of fields) {
+            for (const v of [src[f]].flat().filter((x) => typeof x === 'string')) {
+                if (/^https?:/.test(v)) continue;
+                check(existsSync(join(dir, v)), `${mp}: ${f} points at ${v}, which does not exist`);
+            }
+        }
+    }
+
     // Cursor rules: .mdc with description + (globs or alwaysApply).
     const rulesDir = join(dir, 'rules');
     if (isDir(rulesDir)) {
