@@ -136,4 +136,3 @@ No search finds them.
 - [ ] Velocity: services looked up once at the top, paginator for lists, `standardTable` for
       tables.
 - [ ] New app, lib or theme? `engineVersion="2.0"` and `.mjs`. Existing app? Leave it on Nashorn.
-- [ ] The app version was bumped if the account already has this app installed.
