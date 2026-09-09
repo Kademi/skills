@@ -26,16 +26,31 @@ skills teach an agent how to build them.
 
 ## Install
 
-**Claude Code**
+**Any agent - the quick way**
+
+```
+npx skills add Kademi/skills
+```
+
+[`skills`](https://github.com/vercel-labs/skills) detects the coding agents on your machine and
+installs the twelve skills into each, project-level by default (`-g` for user-level). It knows
+Claude Code, Cursor, Codex, Gemini CLI, GitHub Copilot, Windsurf, Zed and some seventy others, and
+writes a `skills-lock.json` so a team can pin and restore the same set. `--list` shows what's
+available without installing; `-s kademi-server-js kademi-security` picks specific skills.
+
+This installs the **skills only**. The routes below install the whole plugin, which for Cursor also
+brings the glob-scoped rules - see [Contributing](CONTRIBUTING.md) for why those matter.
+
+**Claude Code** - as a plugin, so it tracks this repo and updates with `/plugin update`
 
 ```
 /plugin marketplace add Kademi/skills
 /plugin install kademi@kademi
 ```
 
-**Cursor**
+**Cursor** - as a plugin, with rules
 
-Individual: clone the repo and copy the plugin into Cursor's local plugin directory.
+Individual: copy the plugin into Cursor's local plugin directory.
 
 ```
 git clone https://github.com/Kademi/skills.git
@@ -45,36 +60,20 @@ cp -r skills/plugins/kademi ~/.cursor/plugins/local/kademi
 Whole team: a Teams or Enterprise admin imports `https://github.com/Kademi/skills` under
 Dashboard → Settings → Plugins → Team Marketplaces → Import, and everyone installs it from there.
 
-**Codex / ChatGPT**
+**Codex / ChatGPT** - as a plugin
 
 Workspace admins import the repo as a team marketplace through Codex plugin management. Otherwise
 add it to your personal marketplace at `~/.agents/plugins/marketplace.json`, or clone the repo into
 the workspace you are working in - Codex reads `.agents/plugins/marketplace.json` from the
 repository root.
 
-**Gemini CLI**
-
-Skills are discovered from `~/.gemini/skills/` (alias `~/.agents/skills/`), or per workspace from
-`.gemini/skills/`.
-
-```
-git clone https://github.com/Kademi/skills.git
-cp -r skills/plugins/kademi/skills/* ~/.gemini/skills/
-```
-
 **Anything else**
 
 `plugins/kademi/` is a conformant [Agent Plugins 1.0](https://agent-plugins.org/specification)
-directory, so a client that supports the standard can install it directly - the repo root is a
-marketplace, not a plugin, so point at `plugins/kademi`, not at the root. Failing that, every skill
-is a self-contained folder: copy the ones you want to wherever your agent loads skills from.
-
-```
-git clone https://github.com/Kademi/skills.git
-```
-
-Which skills an agent loads, and when, is decided by each `SKILL.md`'s `description` - see
-[Contributing](CONTRIBUTING.md) for how they are structured.
+directory, so a client that supports the standard can install it directly - point at
+`plugins/kademi`, not the repo root, which is a marketplace rather than a plugin. Failing that,
+every skill is a self-contained folder: copy the ones you want to wherever your agent loads skills
+from.
 
 ## API reference
 
