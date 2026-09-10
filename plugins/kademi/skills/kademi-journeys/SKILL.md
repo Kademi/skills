@@ -102,7 +102,7 @@ The three arguments to `addGoalNodeType` / `addActionNodeType` are:
 1. `name` - the node type id. Unique across every app on the account. This is what an
    administrator's saved funnel JSON records, so **never rename it** once anything uses it.
 2. `template` - repository path, relative to `theme/apps/`, of the file that renders the node's
-   **admin UI**. `'MyApp/closeWarrantyAction.js'` means the file `theme/apps/MyApp/closeWarrantyAction.js`
+   **admin console**. `'MyApp/closeWarrantyAction.js'` means the file `theme/apps/MyApp/closeWarrantyAction.js`
    in your app. It is rendered through Velocity and appended to the journey editor's script.
 3. `jsMethod` - the name of a global function in your app's server-side JavaScript.
 

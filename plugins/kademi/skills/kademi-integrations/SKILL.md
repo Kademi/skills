@@ -11,7 +11,7 @@ metadata:
 
 Kademi's integration framework moves data in and out of an account. Three pieces:
 
-- A **pipeline** is a tree of steps that processes data. Defined as XML, edited in the admin UI.
+- A **pipeline** is a tree of steps that processes data. Defined as XML, edited in the admin console.
 - An **endpoint** connects a pipeline to the outside world: an address over HTTP, FTP, SFTP or
   email, inbound or outbound.
 - A **schedule** fires work on a recurring interval: either an endpoint's pipeline, or a function
@@ -88,7 +88,7 @@ elements** (`mode` is an attribute, `seriesName` is an element), and **the XML e
 always the class name** (`ResultEmail`, `MapReduce`, `QueryExport`, `TableUploader`). Both are
 tabulated in [references/pipeline-steps.md](references/pipeline-steps.md).
 
-The admin UI renders a form per step and writes the XML for you, which is the easiest way to get
+The admin console renders a form per step and writes the XML for you, which is the easiest way to get
 this right. Steps with no dedicated form fall back to the raw XML editor.
 
 ## Choosing steps
@@ -262,7 +262,7 @@ id, a type, a direction, an address pattern and a pipeline path.
 - **Email inbound** matches the pattern against the local part of the recipient address, and
   requires the sender's address to resolve to an existing profile in the account. **Email outbound**
   sends the export as an attachment to addresses and to groups.
-- **Upload only** has no listener: files are uploaded by hand in the admin.
+- **Upload only** has no listener: files are uploaded by hand in the admin console.
 - Credentials and addresses can reference environment variables and secrets as `${my.variable}` or
   `${secret.name}`. Keep secrets out of the XML.
 

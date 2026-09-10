@@ -23,7 +23,7 @@ sales records  ->  record matchers  ->  points allocation source  ->  points rul
 | [SalesDataSeries](https://docs.kademi.co/ref/templating/md/SalesDataSeries.md) | A named stream of sales records - a claims feed, a distributor upload, a POS import | Administrator |
 | [SalesDataRecord](https://docs.kademi.co/ref/templating/md/SalesDataRecord.md) | One row: an amount, a period, a `salesBy` entity, optionally a product SKU and extra fields | Imported, or created by an app |
 | [RecordMatcher](https://docs.kademi.co/ref/templating/md/RecordMatcher.md) | Groups or splits records before allocation - pairs reversals, rolls line items into a claim | Administrator, using a matcher type |
-| **Points allocation source (PAS)** | The rule set that turns the series' records into points against one reward | Administrator, in the admin UI |
+| **Points allocation source (PAS)** | The rule set that turns the series' records into points against one reward | Administrator, in the admin console |
 | **Points rule type** | The code that decides *whether* a record counts and *how many* points it is worth | **You**, from an app |
 | [Reward](https://docs.kademi.co/ref/templating/md/Reward.md) | The points bucket or promotion the points land in; its points system decides profile or organisation | Administrator |
 
@@ -36,7 +36,7 @@ A PAS can work out its points in one of three ways, in increasing order of cost 
 
 1. **Nothing configured** - the record's own value is allocated as points.
 2. **An MVEL expression** on the PAS, with a second MVEL expression filtering which records count.
-   Configured entirely in the admin UI, no app needed. This handles most "amount times 2" and
+   Configured entirely in the admin console, no app needed. This handles most "amount times 2" and
    "only category X" cases.
 3. **A points rule type** registered by an app. When a rule type is set it takes over completely:
    it decides inclusion as well as the amount, and the MVEL expressions are ignored.

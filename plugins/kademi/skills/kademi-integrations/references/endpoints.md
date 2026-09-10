@@ -31,7 +31,7 @@ Full walkthrough:
 ## The endpoint manifest
 
 Endpoints are stored as XML. The classic form is a single manifest at `/theme/integration.xml` in
-the website's files, listing one `endpoint` element per route; the admin UI also reads and writes
+the website's files, listing one `endpoint` element per route; the admin console also reads and writes
 endpoint and pipeline definitions under the website's `/integration` folder.
 
 ```xml
@@ -118,7 +118,7 @@ attribute. An address with no matching profile is still emailed. `fromAddress` a
 
 ### Upload only
 
-Files are uploaded by hand through the admin: no listener, no scheduled fetch. Good for a monthly
+Files are uploaded by hand through the admin console: no listener, no scheduled fetch. Good for a monthly
 file someone sends by email, and good for developing a pipeline before the transport exists.
 
 ## Direction
@@ -196,7 +196,7 @@ or a table uploader.
 `endpoint = endpoint.withEnabled(false)` followed by a save.
 
 Use this when your app needs to provision its own integration on install, or expose a simplified
-configuration screen of its own. For one-off setup, use the admin UI.
+configuration screen of its own. For one-off setup, use the admin console.
 
 ## Reacting to runs
 

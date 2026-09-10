@@ -23,7 +23,7 @@ controllerMappings.promotionMechanicTypeBuilder('content-promo', 'Plain content 
 | Method | What it is |
 |---|---|
 | `editTemplate(path)` | The admin form for configuring an instance of this mechanic |
-| `summaryTemplate(path)` | How the configured mechanic is summarised in the admin UI |
+| `summaryTemplate(path)` | How the configured mechanic is summarised in the admin console |
 | `participantTemplate(path)` | What a participant sees on the website |
 | `saveMechanicDetailsFn(name)` | Function that persists the mechanic's own settings from the edit form |
 | `createMetricsFn(name)` | Function that creates the metrics reported for this mechanic |

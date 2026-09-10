@@ -20,6 +20,8 @@ organisation they apply in. Organisations can be tagged with organisation types 
 
 **Website** - a public site served by the account, identified by its own DNS name. One account can
 run many. A website is also a versioned content repository, so its pages and assets have history.
+Its `/theme/` folder holds the site's overrides of its theme - parameters, custom styles, menu,
+replaced templates - and is where a site builder works; `kademi-themes` covers it.
 See [Website](https://docs.kademi.co/ref/templating/md/Website.md) and
 [WebsiteManager](https://docs.kademi.co/ref/templating/md/WebsiteManager.md).
 
@@ -28,7 +30,7 @@ theme or a funnel. If something in Kademi has versions, it is a repository under
 
 **Branch** - a named line of history within a repository. For an installed app the live branch name
 is the installed version number, which is why "branch" and "version" are used interchangeably in
-`dependencies.json` and in the admin UI. The same app installed into two accounts is two separate
+`dependencies.json` and in the admin console. The same app installed into two accounts is two separate
 repositories with independent live branches.
 
 ## People

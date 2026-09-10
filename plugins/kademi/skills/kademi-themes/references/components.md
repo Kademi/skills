@@ -212,6 +212,31 @@ excludeList, false)` reads the component's current attributes.
 Declare the JS file in the app's `dependencies.json` so it loads in the editor - see
 [dependencies-json.md](dependencies-json.md).
 
+### Document the settings in a JSON file beside the form
+
+`<compId>Settings.json`, sitting next to `<compId>Settings.html`, is a hand-authored schema of the
+attributes the component takes. It is a JSON array, one entry per setting:
+
+```json
+[
+    {
+        "dataAttribute": "data-row-limit",
+        "label": "Rows to show",
+        "type": "number",
+        "options": [],
+        "description": "How many rows the table shows before paging. Defaults to 10."
+    }
+]
+```
+
+`type` is a hint for whoever is reading it - `string`, `number`, `select`, `boolean` - and `options`
+lists the allowed values for a `select`, empty otherwise.
+
+Nothing breaks without the file, and it does not drive the settings panel: the form and its
+JavaScript still do that. What it gives you is the only machine-readable statement of what the
+component accepts, which is what anyone placing your component by hand has to work from. Write it
+for any component with more than a couple of settings, and keep it in step with the form.
+
 ---
 
 ## Rendering a component outside the page builder

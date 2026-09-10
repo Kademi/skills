@@ -272,7 +272,7 @@ organisation and branch.
 **Use `getSetting`, not `getRawSetting`.** `getSetting` resolves `${my.variable}` and
 `${secret.name}` placeholders; `getRawSetting` deliberately returns the stored value verbatim, for
 the settings editor UI that has to show and re-save the placeholder. A credential fetched with
-`getRawSetting` goes out to the provider as the literal string `${secret.…}`. See
+`getRawSetting` goes out to the provider as the literal string `${secret....}`. See
 [WebsiteManager](https://docs.kademi.co/ref/templating/md/WebsiteManager.md) and
 [kademi-security](../kademi-security/SKILL.md).
 

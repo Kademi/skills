@@ -60,7 +60,7 @@ typed items, for example:
 </columnWidths>
 ```
 
-The safest way to author a pipeline is the admin UI (Data > Integration > Endpoints, then the
+The safest way to author a pipeline is the admin console (Data > Integration > Endpoints, then the
 Pipeline tab): it renders a form per step and writes the XML for you. Steps with no dedicated form
 fall back to the raw XML editor, which is also reachable from Edit Pipeline XML file.
 

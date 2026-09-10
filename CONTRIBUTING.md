@@ -82,3 +82,26 @@ node scripts/validate-plugins.mjs
 `scripts/validate-plugins.mjs` is repo tooling, not part of a skill - the no-scripts rule applies to
 what ships inside a plugin.
 
+### Describing something that is not a file
+
+The developer reading a skill has local files, KSync and a login to the admin console. They do not
+have Kademi's in-account agents or their tools. Describe every capability in this order, stopping at
+the first that applies:
+
+1. **It is a file in the app or website repository.** Give the path and show the file. This is the
+   default, and it is what the developer can sync. Theme parameters are `/theme/theme-params.less`,
+   the menu is `/theme/menu.json`, and so on - not "set the theme parameter".
+2. **The admin console writes a file the developer can read back.** Say so, and say which file.
+   "The menu editor writes exactly this file, so open it on the site and read the file back" is the
+   pattern; it turns a UI-only step into something the developer can inspect and version.
+3. **It only exists in the admin console.** Use the phrase *in the admin console*, name the location
+   as a bold breadcrumb (**Account settings > Environment variables**), link the docs.kademi.co
+   article, and when it is the trap, say plainly that it is not a file and there is nothing to sync.
+4. **Never name an in-account agent tool** (`setThemeParams`, `listPageTemplates` and friends).
+   They are not available to the reader, and a skill that cites one sends them looking for something
+   that does not exist in their environment.
+
+The one phrase is deliberate. "The admin", "the admin UI" and "the admin console" have all been used
+to mean the same place; the repo now says *the admin console* everywhere, and "admin domain" only
+when the point is which hostname serves a file.
+

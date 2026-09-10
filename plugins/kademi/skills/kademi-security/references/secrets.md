@@ -65,7 +65,7 @@ and read the setting.
 | Situation | Where |
 |---|---|
 | One credential for the whole account | Account secret, referenced from an app setting |
-| Different per website | App setting per branch, holding a `${secret.…}` placeholder |
+| Different per website | App setting per branch, holding a `${secret....}` placeholder |
 | Per end user (OAuth tokens and similar) | Stored against the profile by the platform - see [auth.md](../../kademi-server-js/references/auth.md) |
 | Needed by browser JavaScript | It is not a secret. Anything the browser can read is public - redesign so the call happens server-side |
 

@@ -27,24 +27,24 @@ Non-negotiable. Each links to where it is explained.
 
 1. **No credential in an app's files.** Not in JS, XML, templates, `dependencies.json`, or a
    commented-out line. App source is versioned, synced and published.
-   → [secrets.md](references/secrets.md)
+   -> [secrets.md](references/secrets.md)
 2. **Credentials live in account secrets**, referenced from an app setting as `${secret.name}`, and
    read with `getSetting` - never `getRawSetting`, which returns the placeholder unresolved.
-   → [secrets.md](references/secrets.md)
+   -> [secrets.md](references/secrets.md)
 3. **Never read a request parameter directly.** Always the form context: `cleanedParam`,
    `dateParam`, or a validation context in POST handlers.
-   → [input-and-authorisation.md](references/input-and-authorisation.md)
+   -> [input-and-authorisation.md](references/input-and-authorisation.md)
 4. **Every controller checks the current user may do this, before doing it** - role *and*
    ownership. A route under `admin/` is not an authorisation check.
-   → [input-and-authorisation.md](references/input-and-authorisation.md)
+   -> [input-and-authorisation.md](references/input-and-authorisation.md)
 5. **No mutable state in global or module scope.** App instances are shared across accounts, so a
    value cached for account A is served to account B.
-   → [input-and-authorisation.md](references/input-and-authorisation.md)
+   -> [input-and-authorisation.md](references/input-and-authorisation.md)
 6. **Nothing untrusted reaches the page unescaped** - cookies and headers included.
-   → [input-and-authorisation.md](references/input-and-authorisation.md)
+   -> [input-and-authorisation.md](references/input-and-authorisation.md)
 7. **Never log a credential, token, session id, password or full request body.** Account
    administrators can read the server logs.
-   → [input-and-authorisation.md](references/input-and-authorisation.md)
+   -> [input-and-authorisation.md](references/input-and-authorisation.md)
 
 ## Find committed credentials
 
@@ -63,7 +63,7 @@ This search is part of the standard review in
 ## Before shipping
 
 - [ ] The credential search above is clean.
-- [ ] Credentials come from `${secret.…}`, read with `getSetting`.
+- [ ] Credentials come from `${secret....}`, read with `getSetting`.
 - [ ] Every controller checks a permission, and ownership where the data is scoped.
 - [ ] Every parameter comes through the validation context or `cleanedParam` / `dateParam`.
 - [ ] `rawParam` values are parsed and validated before use.

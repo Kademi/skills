@@ -1,6 +1,6 @@
 ---
 name: kademi-app-development
-description: Use when someone is getting started with Kademi, or is working on a Kademi app as a package rather than on the code inside it. Covers what Kademi is and its account, organisation, website and profile model; how a repository app is laid out; whether to build an app, a lib or a theme; setting up KSync and syncing to a hosted account; and creating versions and publishing to the Marketplace. Use on first contact with Kademi, when someone asks what a Kademi term means, how a Kademi app is structured, or how to set up, sync, version, deploy or publish one - including when they do not name Kademi but are clearly working in a Kademi repository. For writing the code inside an app, this skill names the specialist skill to use instead.
+description: Use when someone is getting started with Kademi, or is working on a Kademi app as a package rather than on the code inside it. Covers what Kademi is and its account, organisation, website and profile model; how a repository app is laid out; whether the work belongs in a website, an app, a lib or a theme; setting up KSync and syncing to a hosted account; and creating versions and publishing to the Marketplace. Use on first contact with Kademi, including someone who only wants to build or restyle a website on it, when someone asks what a Kademi term means, how a Kademi app is structured, or how to set up, sync, version, deploy or publish one - including when they do not name Kademi but are clearly working in a Kademi repository. For writing the code inside an app, this skill names the specialist skill to use instead.
 license: Apache-2.0
 metadata:
   author: kademi
@@ -117,7 +117,7 @@ Read [references/project-layout.md](references/project-layout.md) when you need 
 tree, when you are deciding which directory a new file belongs in, or when you need to work out
 which URL a file in the repository is served at.
 
-## App vs lib vs theme
+## Website vs app vs lib vs theme
 
 All three are the same file structure, in the same Marketplace, published the same way. What
 differs is what the repository declares itself to provide, which you set in the App Builder when
@@ -128,6 +128,14 @@ you create it.
 | **App** | You are delivering a feature an account administrator would recognise and choose to turn on: a claims process, a quiz, a payment provider, an integration | The account, from the Marketplace. Appears in the account's app list |
 | **Lib** | You are delivering something other apps consume rather than something a user turns on: shared services, a wrapped third-party JS library, common templates | Pulled in automatically as a dependency of an app that names it |
 | **Theme** | You are delivering the look of a website: master template, page templates, LESS, fonts, images. Usually no server-side code at all | Selected as a website's theme |
+
+A **website** is none of these, and it is the first thing a site builder touches. It is a repository
+too, but one created in the admin console rather than the App Builder, with no version to publish to
+the Marketplace. It holds the site's pages and the files that override its theme -
+`/theme/theme-params.less`, `/theme/custom-styles.less`, `/theme/menu.json`, and any theme template
+the site replaces. If the task is a page, the menu or the look of the site, you are working in the
+website repository and `kademi-themes` is the skill. You need an app only when the site needs
+behaviour no installed app provides.
 
 Notes that decide the choice in practice:
 
@@ -172,7 +180,7 @@ publishing an app for the first time, or releasing an update to one already on t
 | Confirming a platform class, service, manager or method before calling it | `kademi-api-reference` |
 | Anything under `APP-INF/` - `controllers.xml`, routes, services, POST handling, roles, app settings, background async jobs, and tracking down a server-side error | `kademi-server-js` |
 | Admin console screens, portlets that add a panel to another app's page, and admin browser JavaScript | `kademi-admin-ui` |
-| Velocity templates, website and theme templates, KEditor components, LESS and CSS, and `dependencies.json` on any surface | `kademi-themes` |
+| Building or restyling a website - pages and their container structure, the menu, who sees what, theme parameters and custom styles - plus Velocity templates, KEditor components, LESS and CSS, and `dependencies.json` on any surface | `kademi-themes` |
 | Moving data in or out in bulk - imports, exports, feeds, pipelines, map-reduce, scheduled runs | `kademi-integrations` |
 | Custom journey goal and action node types, and the journey fields administrators reach through KCode | `kademi-journeys` |
 | Prompt functions, agent definitions, MCP | `kademi-ai` |

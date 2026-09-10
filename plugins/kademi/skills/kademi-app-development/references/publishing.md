@@ -3,9 +3,9 @@
 Three separate things, often confused:
 
 1. **Syncing** - getting your local files into an app version's repository on an account. KSync.
-2. **Versioning** - creating a new version of an app. Done in the admin UI.
+2. **Versioning** - creating a new version of an app. Done in the admin console.
 3. **Publishing** - listing a version on the Kademi Marketplace so other accounts can install it.
-   Done in the admin UI.
+   Done in the admin console.
 
 Guide: <https://docs.kademi.co/blogs/docs-kb/deploying-apps-to-the-marketplace/>
 

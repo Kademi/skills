@@ -134,7 +134,7 @@ a ready-made component: see
 
 ## Notices and alerts - one shape
 
-Every notice in the admin is the same row, whether it is a queue of them on a dashboard or a
+Every notice in the admin console is the same row, whether it is a queue of them on a dashboard or a
 single banner on a detail page. **Do not use Bootstrap's `.alert` for a page notice.**
 `.alert-{severity}` floods the whole block with colour and recolours the heading, which
 buries the message and makes the notice look nothing like the queue rows elsewhere in the

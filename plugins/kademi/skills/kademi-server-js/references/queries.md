@@ -213,7 +213,7 @@ Four routes to a custom report, cheapest first
    whose single line is the path of a plain-text template, for example
    `/theme/reports/report1.vel`. The template emits comma-separated rows. No JS at all.
 2. **Customise an existing report.** Some built-in reports let you choose and reorder the exported
-   fields as expressions, from Add custom report in the admin UI.
+   fields as expressions, from Add custom report in the admin console.
 3. **A custom app route.** One controller for the admin screen and one for the CSV, both filling
    `page.attributes` from a shared loader function.
 4. **The integration framework**, when the output has to be a real spreadsheet.

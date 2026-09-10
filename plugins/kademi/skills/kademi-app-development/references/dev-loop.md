@@ -13,7 +13,7 @@ There is no local Kademi server. The account is the runtime.
 - JAR: <http://docs.kademi.co/ksync/ksync3.jar> (KSync3 - the current version; requires Java 8+)
 
 Cross-platform and Windows installers are also available from the guide. The installers register
-a `ksync://` URI scheme, so links in the Kademi admin UI can launch a checkout directly.
+a `ksync://` URI scheme, so links in the Kademi admin console can launch a checkout directly.
 
 Run it as:
 
@@ -86,7 +86,7 @@ ksync.sh -command sync
 
 ## Publishing
 
-Versions are created in the admin UI, not as folders in your working tree, and publishing to the
+Versions are created in the admin console, not as folders in your working tree, and publishing to the
 Marketplace is a UI action. KSync also has a bulk `publish` command for pushing many apps at once
 from a `<rootdir>/{apps,libs,themes}/<app-id>/<version>/` tree.
 

@@ -181,7 +181,7 @@ See
 [EmailManager](https://docs.kademi.co/ref/templating/md/EmailManager.md) and
 [SmsManager](https://docs.kademi.co/ref/templating/md/SmsManager.md).
 
-Provider credentials go in app settings holding `${secret.…}` placeholders, read with `getSetting` -
+Provider credentials go in app settings holding `${secret....}` placeholders, read with `getSetting` -
 see [kademi-security](../../kademi-security/SKILL.md). A sender app holds the keys to every message
 the account sends, so it is the last place to be casual about them.
 

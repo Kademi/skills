@@ -75,7 +75,7 @@ a [RecurringTransaction](https://docs.kademi.co/ref/templating/md/RecurringTrans
 
 ## Rules
 
-- **Credentials come from app settings holding a `${secret.…}` placeholder**, read with
+- **Credentials come from app settings holding a `${secret....}` placeholder**, read with
   `getSetting`. Never `getRawSetting`, never a constant in the file. See
   [kademi-security](../../kademi-security/SKILL.md).
 - **Never trust an amount that came from the request.** Charge `totalAmount` as the platform

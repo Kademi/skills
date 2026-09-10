@@ -15,7 +15,7 @@ skills teach an agent how to build them.
 | [`kademi-api-reference`](plugins/kademi/skills/kademi-api-reference) | Looking up platform classes, services and methods in the public API reference |
 | [`kademi-server-js`](plugins/kademi/skills/kademi-server-js) | Server-side JavaScript under `APP-INF/`, `controllers.xml`, routes, services, queries |
 | [`kademi-admin-ui`](plugins/kademi/skills/kademi-admin-ui) | Admin pages, portlets, client-side JS and CSS, UX conventions |
-| [`kademi-themes`](plugins/kademi/skills/kademi-themes) | Velocity templates, KEditor components, websites and themes |
+| [`kademi-themes`](plugins/kademi/skills/kademi-themes) | Building and restyling websites - pages, menus, targeting, theme parameters - plus Velocity templates and KEditor components |
 | [`kademi-integrations`](plugins/kademi/skills/kademi-integrations) | Pipelines, import/export, SFTP and email endpoints, map-reduce, sync jobs |
 | [`kademi-journeys`](plugins/kademi/skills/kademi-journeys) | Custom journey goal and action node types, journey fields, funnel events |
 | [`kademi-ai`](plugins/kademi/skills/kademi-ai) | Prompt functions, agent definitions, MCP tools |
