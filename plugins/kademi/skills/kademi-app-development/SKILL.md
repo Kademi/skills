@@ -152,7 +152,7 @@ too, but one created in the admin console rather than the App Builder, with no v
 the Marketplace. It holds the site's pages and the files that override its theme -
 `/theme/theme-params.less`, `/theme/custom-styles.less`, `/theme/menu.json`, and any theme template
 the site replaces. If the task is a page, the menu or the look of the site, you are working in the
-website repository and `kademi-themes` is the skill. A website is not limited to pages and styling,
+website repository and `kademi-websites` is the skill. A website is not limited to pages and styling,
 though: it registers through its own `/WEB-INF/controllers.xml` using the same registration API an
 app uses in `/APP-INF/controllers.xml`, so **a website can register most of what an app can** -
 routes, portlets, event listeners, journey node types, payment providers, components. See
@@ -234,7 +234,8 @@ making your own app's entities promotable.
 | Confirming a platform class, service, manager or method before calling it | `kademi-api-reference` |
 | Anything under `APP-INF/` - `controllers.xml`, routes, services, POST handling, roles, app settings, background async jobs, and tracking down a server-side error | `kademi-server-js` |
 | Admin console screens, portlets that add a panel to another app's page, and admin browser JavaScript | `kademi-admin-ui` |
-| Building or restyling a website - pages and their container structure, the menu, who sees what, theme parameters and custom styles - plus Velocity templates, KEditor components, LESS and CSS, and `dependencies.json` on any surface | `kademi-themes` |
+| Building or restyling a website - pages and their container structure, the menu, who sees what, theme parameters and custom styles, translations | `kademi-websites` |
+| Velocity templates, KEditor components, LESS and CSS an app ships, `dependencies.json` on any surface, front-end forms | `kademi-themes` |
 | Moving data in or out in bulk - imports, exports, feeds, pipelines, map-reduce, scheduled runs | `kademi-integrations` |
 | Custom journey goal and action node types, and the journey fields administrators reach through KCode | `kademi-journeys` |
 | Prompt functions, agent definitions, MCP | `kademi-ai` |
@@ -243,7 +244,7 @@ making your own app's entities promotable.
 | Credentials, secrets, request input, authorisation checks, anything security-sensitive | `kademi-security` |
 | The house coding standards, and the review to run before handing work back | `kademi-coding-standards` |
 
-That is all eleven specialist skills. If a task fits one of them, hand it over rather than guessing
+That is all twelve specialist skills. If a task fits one of them, hand it over rather than guessing
 from this skill. `kademi-coding-standards` is not an alternative to the others - run its review over
 your changes whatever else you used.
 

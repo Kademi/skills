@@ -1,5 +1,10 @@
 # KEditor components
 
+> A component renders inside the container, column and component tree a website page must have.
+> That structure, and the rules for placing a component on a page, are in
+> [kademi-websites/references/page-structure.md](../../kademi-websites/references/page-structure.md);
+> this file is about building the component itself.
+
 A component is a block a content author drags from the KEditor palette onto a page. Any app can
 contribute components. The app registers the component in its server-side JavaScript; Kademi
 derives the file paths from the app id and component id.

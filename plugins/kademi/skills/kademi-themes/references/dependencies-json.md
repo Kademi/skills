@@ -28,7 +28,7 @@ the public site does not need.
 A **website** has one of its own, one level up, at `/theme/dependencies.json` in its repository.
 Same format. That is where a site declares assets of its own rather than an app's, and it is what
 `/theme/custom-styles.less` has to be listed in before its rules apply - see
-[theming.md](theming.md).
+[theming.md](../../kademi-websites/references/theming.md).
 
 ---
 

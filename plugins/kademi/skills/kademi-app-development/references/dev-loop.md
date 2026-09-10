@@ -96,10 +96,34 @@ from a `<rootdir>/{apps,libs,themes}/<app-id>/<version>/` tree.
 
 See [publishing.md](publishing.md).
 
+## The .ksync directory
+
+`checkout` writes a `.ksync` directory. It is KSync's own bookkeeping, not part of your project.
+
+**Never write anything under `.ksync`.** The `blobs` and `hashes` directories are KSync's record
+of what it believes the server already has. Editing them does not change anything on the account;
+it corrupts the checkout's record of what is synced, and the next `push` or `pull` misbehaves.
+
+**One value in it is worth reading: `url` in `.ksync/ksync.properties`.** It is the checkout URL,
+which is how you find out which account, repository and version this directory is connected to:
+
+```properties
+url=https\://myorg.admin.kademi.us/repositories/my-website/version1/
+```
+
+Change a checkout by running KSync, never by editing its properties file.
+
+KSync keeps credentials in a per-user file outside the checkout -
+`~/.config/ksync/credentials.json` on Linux, `~/Library/Application Support/ksync/credentials.json`
+on macOS, `%AppData%\ksync\credentials.json` on Windows - mode 0600, deliberately not in a
+project so a commit cannot pick it up. Never read, quote or copy that file. Older checkouts
+predating that change still carry a `userUrlHash` token in `ksync.properties`, so take the `url`
+line and nothing else either way.
+
 ## Working with git
 
 KSync and git are independent. Keep your app in git as normal and let KSync handle the account.
-Exclude KSync's metadata:
+Exclude KSync's bookkeeping:
 
 ```gitignore
 .ksync/

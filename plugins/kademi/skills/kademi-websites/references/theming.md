@@ -64,12 +64,13 @@ site's own `theme-params.less`, `custom-styles.less`, `menu.json` and any overri
 
 ## theme-params.less: the LESS parameters
 
-A site's look is driven by LESS variables. They resolve in layers - Bootstrap's defaults, Kademi's
-additions, the installed theme's variables - and the site overrides any of them in
-`/theme/theme-params.less` in its own repository. The Bootstrap base library declares that file
-immediately after Bootstrap's own, so it is concatenated last and its declarations win. Nothing
-needs wiring up: the file is already in the build on every site, and an untouched one is empty
-except for a comment.
+A site's look is driven by LESS variables. They resolve in four layers - Bootstrap's defaults,
+Kademi's additions, the installed theme's variables - and the site overrides any of them in
+`/theme/theme-params.less` in its own repository. Only that last layer is in the checkout; read
+[theme-discovery.md](theme-discovery.md) to get the other three off the running site before you
+change anything. The Bootstrap base library declares that file immediately after Bootstrap's own,
+so it is concatenated last and its declarations win. Nothing needs wiring up: the file is already
+in the build on every site, and an untouched one is empty except for a comment.
 
 ```less
 @brand-primary: #2b4be6;
@@ -88,7 +89,8 @@ appears unstyled with nothing on the page to say why. Two consequences:
 - **Take parameter names from the theme, never from assumption.** A name that does not exist is not
   ignored; a value referring to an `@variable` the theme does not have fails the compile. The names
   in force are Bootstrap 3.4's variables plus whatever the theme declares in its own
-  `less/theme-variables.less`, so read that file for the theme the site is on. From a template,
+  `less/theme-variables.less`, so read that file for the theme the site is on -
+  [theme-discovery.md](theme-discovery.md) is how you get hold of it. From a template,
   `$rootFolder.themeParams` is the resolved map of parameter names to the value currently in force,
   which is the way to check one without compiling:
   `#set( $navHeight = $rootFolder.themeParams.get("navbar-height") )`.
@@ -131,7 +133,7 @@ Note the path: this is the **website-level** dependencies file at `/theme/depend
 the per-app one at `/theme/apps/<appId>/dependencies.json`. Leave `position` out of the entry so
 the site's own overrides land last, which is where they belong. Everything else about the file's
 format, and the way a single bad key discards it whole, is in
-[dependencies-json.md](dependencies-json.md).
+[dependencies-json.md](../../kademi-themes/references/dependencies-json.md).
 
 An undeclared `custom-styles.less` is not an error. The rules simply do not apply, and the only
 symptom is styling that does nothing.
@@ -141,10 +143,34 @@ site's stylesheet, not just this file's rules.
 
 See <https://docs.kademi.co/blogs/docs-kb/custom-css/>.
 
-In practice, older sites often have rules in `theme-params.less` as well. They work, because both
-files land in the same compiled document, but new rules belong in `custom-styles.less` and new
-variable overrides in `theme-params.less`. Keeping them apart is what makes the parameter list
-readable.
+### Never put style rules in theme-params.less
+
+`theme-params.less` is not a stylesheet. It is a list of variable assignments that Kademi reads and
+rewrites with a line-based parser, and that parser only understands lines of the form
+`@name: value;`.
+
+Two things follow, and the second one destroys work:
+
+- **A line starting with `@` that is not a variable is misread as one.** `@media (max-width: 768px) {`
+  starts with `@` and contains a colon, so it is recorded as a parameter named `media (max-width`.
+  The same applies to `@import`, `@supports` and `@keyframes`.
+- **Anything that is not a variable assignment is deleted the next time theme parameters are saved
+  through Kademi.** Editing the file yourself is safe: writing it through KSync, or in an editor,
+  changes nothing else. But every parameter save - the admin console's theme editor, the KToolbar
+  panel on the website itself, site creation from a recipe, a tool acting for an administrator -
+  round-trips the file through the same parser: it reads the variables, then rewrites the file from
+  them, and writes back only the lines it recognised. Every style rule, comment and blank line is dropped, with no warning and no error.
+  You will not be the one who triggers it. Someone tweaks a brand colour in the admin months later
+  and the rules vanish.
+
+One more limit of that parser: it splits each line on the first colon, so a value that itself
+contains a colon - `url(https://...)` - reads back truncated at that point, both in the editor and in
+`$rootFolder.themeParams`. Keep such values in `custom-styles.less`.
+
+You will see older sites with rules in `theme-params.less`, and they render, which is why the
+practice spread. They are one theme-parameter edit away from being erased.
+
+Variables in `theme-params.less`. Rules in `custom-styles.less`. Always.
 
 ### Per-organisation and per-request theming
 
@@ -179,7 +205,7 @@ Two sources of templates:
   The last argument, `contentTemplate`, is true when authors may create new pages from it; false
   means it is a template for other templates rather than for content. The fuller
   `templateDefBuilder()` form, including which editor a page on the template opens in, is in
-  [components.md](components.md).
+  [components.md](../../kademi-themes/references/components.md).
 
 The template picker an author sees when creating a page is exactly the union of those two lists. If
 a template is offered in the editor and you cannot find it, it is either a file in `/theme/` or an

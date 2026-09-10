@@ -15,7 +15,8 @@ skills teach an agent how to build them.
 | [`kademi-api-reference`](plugins/kademi/skills/kademi-api-reference) | Looking up platform classes, services and methods in the public API reference |
 | [`kademi-server-js`](plugins/kademi/skills/kademi-server-js) | Server-side JavaScript under `APP-INF/`, `controllers.xml`, routes, services, queries |
 | [`kademi-admin-ui`](plugins/kademi/skills/kademi-admin-ui) | Admin pages, portlets, client-side JS and CSS, UX conventions |
-| [`kademi-themes`](plugins/kademi/skills/kademi-themes) | Building and restyling websites - pages, menus, targeting, theme parameters - plus Velocity templates and KEditor components |
+| [`kademi-websites`](plugins/kademi/skills/kademi-websites) | Building and restyling a website - pages, layout, the menu, who sees what, theme parameters, translations |
+| [`kademi-themes`](plugins/kademi/skills/kademi-themes) | Velocity templates, KEditor components, `dependencies.json`, front-end forms |
 | [`kademi-integrations`](plugins/kademi/skills/kademi-integrations) | Pipelines, import/export, SFTP and email endpoints, map-reduce, sync jobs |
 | [`kademi-journeys`](plugins/kademi/skills/kademi-journeys) | Custom journey goal and action node types, journey fields, funnel events |
 | [`kademi-ai`](plugins/kademi/skills/kademi-ai) | Prompt functions, agent definitions, MCP tools |
@@ -33,7 +34,7 @@ npx skills add Kademi/skills
 ```
 
 [`skills`](https://github.com/vercel-labs/skills) detects the coding agents on your machine and
-installs the twelve skills into each, project-level by default (`-g` for user-level). It knows
+installs the thirteen skills into each, project-level by default (`-g` for user-level). It knows
 Claude Code, Cursor, Codex, Gemini CLI, GitHub Copilot, Windsurf, Zed and some seventy others, and
 writes a `skills-lock.json` so a team can pin and restore the same set. `--list` shows what's
 available without installing; `-s kademi-server-js kademi-security` picks specific skills.

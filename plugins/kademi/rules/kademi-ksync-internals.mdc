@@ -1,0 +1,30 @@
+---
+description: Files under .ksync are KSync's own bookkeeping for a Kademi checkout. Editing them corrupts the checkout's record of what is synced.
+alwaysApply: false
+globs:
+  - "**/.ksync/**"
+---
+
+# .ksync is KSync's bookkeeping, not your files
+
+This path belongs to KSync, the tool that syncs a Kademi app, lib, theme or website between a
+local directory and a hosted account. Nothing here is part of the project.
+
+**Never write anything under `.ksync`.** The `blobs` and `hashes` directories are KSync's record
+of what it believes the server already has. Editing them does not change the site; it corrupts the
+checkout's idea of what is synced, and the next `push` or `pull` behaves unpredictably.
+
+**One value is worth reading: `url` in `.ksync/ksync.properties`**. It is the checkout URL, and
+says which account, repository and version this directory is connected to:
+
+```properties
+url=https\://myorg.admin.kademi.us/repositories/my-website/version1/
+```
+
+Read the URL; do not quote the rest of the file, which in older checkouts can hold a user token.
+Do not write it - change a checkout by running KSync, not by editing its properties file.
+
+Add `.ksync/` to `.gitignore`; it is machine-local state and does not belong in version control.
+
+See the `kademi-app-development` skill for the KSync workflow, and `kademi-websites` for using
+the checkout URL to work out a site's address.

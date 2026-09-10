@@ -21,7 +21,7 @@ organisation they apply in. Organisations can be tagged with organisation types 
 **Website** - a public site served by the account, identified by its own DNS name. One account can
 run many. A website is also a versioned content repository, so its pages and assets have history.
 Its `/theme/` folder holds the site's overrides of its theme - parameters, custom styles, menu,
-replaced templates - and is where a site builder works; `kademi-themes` covers it.
+replaced templates - and is where a site builder works; `kademi-websites` covers it.
 See [Website](https://docs.kademi.co/ref/templating/md/Website.md) and
 [WebsiteManager](https://docs.kademi.co/ref/templating/md/WebsiteManager.md).
 

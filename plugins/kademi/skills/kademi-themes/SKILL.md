@@ -1,18 +1,23 @@
 ---
 name: kademi-themes
-description: Use when working on a Kademi website, theme or Velocity template - page bodies and the container, column and component tree they follow, any .html file under a theme/ folder, the master, theme and page template chain, KEditor components authors drag onto a page, theme LESS parameters and custom stylesheets, navigation menus, content targeting, multi-language sites and translated page text, the dependencies.json declaring an app's browser assets, and front-end registration, login, one-time-password, survey and payment forms. Use when writing or debugging Velocity (#set, #if, #foreach, #macro, escaping), when a page shows "Couldnt parse template file", when a value renders as 4.0 or comes out empty, when a macro shows the previous row's data, when a component renders nothing or the editor flattens a page, when a section is missing for everyone or visible to everyone, when a page renders untranslated or in the wrong language, when a CSS or JavaScript file is not loading, or when restyling a Kademi site.
+description: Write or debug the Velocity templates and the theme, KEditor component and browser-asset files a Kademi app ships - any .html under a theme/ folder, a component's template and settings files, dependencies.json, and front-end registration, login, one-time-password, survey and payment forms. Use when a template fails with "Couldnt parse template file", a value renders as 4.0 or comes out empty, a macro shows the previous row's data, a component is missing from the picker or renders without its settings, a CSS or JavaScript file never loads, or a form posts and nothing happens. For a website's own pages, look, menu or languages use kademi-websites.
 license: Apache-2.0
 metadata:
   author: kademi
-  version: "0.2"
+  version: "0.3"
 ---
 
 # Kademi: themes
 
 Kademi renders websites and admin screens from **Velocity** templates. A theme is an app whose
-files are mostly templates and LESS. A website has a repository of its own holding its pages and
-the files that override its theme. Any app can also contribute **KEditor components** -
-drag-and-drop blocks that content authors place on a page.
+files are mostly templates and LESS; any app can also contribute **KEditor components** -
+drag-and-drop blocks that content authors place on a page - and declares its browser JavaScript
+and CSS in a `dependencies.json`.
+
+This skill is for those files: the Velocity language as Kademi uses it, what a template can read,
+building a component, declaring assets, and the forms that post to Kademi's built-in endpoints. The
+site those templates render - its pages, look, menu, targeting and languages - is the
+`kademi-websites` skill, and so is the master, theme and page template chain a theme provides.
 
 ## Which .html files are Velocity
 
@@ -42,135 +47,6 @@ is significant to the output. Reflowing a template silently reorders directives 
 tags they wrap and produces markup that no longer nests. Indent and wrap these files manually,
 and keep automatic formatters pointed away from `theme/**/*.html`.
 
-## Building a website page
-
-A page is a complete HTML document whose `<head>` names its template and whose `<body>` is a stack
-of containers. The structure is the file format, not a house style: the drag-and-drop editor reads
-exactly this shape, and the server renders a component only when its placeholder is present.
-
-```html
-<html>
-    <head>
-        <title>Rewards Dashboard</title>
-        <link rel="template" href="theme/page" />
-    </head>
-    <body>
-        <div class="container-bg background-for">
-            <div class="container-layout container">
-                <div class="container-content-wrapper">
-                    <div class="row">
-                        <div class="col-sm-8 col-md-8 col-lg-8" data-type="container-content">
-
-                            <section data-type="component-text">
-                                <h1>Rewards Dashboard</h1>
-                            </section>
-
-                            <div data-type="component-htmlPanel" data-bg="bg-primary"
-                                 data-html="&lt;h3&gt;1,250&lt;/h3&gt;&lt;p&gt;Points earned&lt;/p&gt;">
-                                <div data-dynamic-href="_components/htmlPanel" id="panel-points"></div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </body>
-</html>
-```
-
-All four container divs matter, in that order. `data-type="container-content"` is what makes a
-column a column. Columns are Bootstrap 3.4 and must total 12. One container per band of the page -
-a hero, a row of stats and a row of detail panels are three containers - which is what lets an
-author restyle or reorder each band on its own.
-
-A component registered by an app is a wrapper carrying the settings plus an empty placeholder
-naming the component. Components built into the editor, `component-text` chief among them, carry
-their content inline and take no placeholder.
-
-Read **[references/page-structure.md](references/page-structure.md)** before writing or editing any
-page body, and whenever a component renders nothing, an author's save flattened a page, or you need
-images, reporting components, kcodes or a stat row on a page: it has the full container and
-component rules, layout judgement, the photo and htmlPanel components, the reporting components and
-their data sources, and a worked page.
-
-## Themes, templates and styling
-
-A minimal theme is a handful of templates plus a LESS parameters file:
-
-```
-website/theme/masterTemplate.html        page shell - <html>, <head>, <body>
-website/theme/defaultThemeTemplate.html  the standard wrapper (menu + body region)
-website/theme/blankThemeTemplate.html    wrapper with no menu
-website/theme/page.html                  body template for an interior page
-website/theme/home.html                  body template for the home page
-website/theme/theme-params.less          LESS variable overrides
-website/theme/apps/<themeId>/dependencies.json
-```
-
-Rendering runs through three layers, innermost first:
-
-1. **The content page** names its body template: `<link rel="template" href="theme/page" />`.
-2. **The body template** (`theme/page.html`) names its theme template the same way:
-   `<link rel="template" href="theme/defaultThemeTemplate" />`. If it names none, the theme
-   template `normal` is used.
-3. **The theme template** `#parse`s `masterTemplate.html` and drops the layer below it in with
-   `$themeTemplate.body`.
-
-`masterTemplate.html` is where the `<head>` is assembled and where the combined CSS and JS that
-Kademi built from every app's `dependencies.json` gets written out.
-
-**Restyling is a LESS job, not a template job.** Two files in the website's own repository:
-
-- `/theme/theme-params.less` holds LESS **variable** overrides - `@brand-primary: #2b4be6;` - and
-  is already in every site's build, so a declaration there takes effect on reload. This is the
-  first thing to reach for: a parameter restyles the site consistently.
-- `/theme/custom-styles.less` holds **rules** the parameters cannot express. It is compiled with
-  the theme, so a rule there can use `@brand-primary` and the theme's mixins, and it comes last so
-  it wins. Unlike theme-params it is **not** in the build until it is declared in the website's own
-  `/theme/dependencies.json`.
-
-Read **[references/theming.md](references/theming.md)** when you are changing how a site looks,
-picking between a parameter and a rule, adding a page template, or putting a page in the navigation
-menu: it covers both stylesheets and their failure modes, where parameter names come from,
-`/theme/menu.json`, page templates and website versions.
-
-## Content targeting
-
-A container can be restricted to particular groups or organisation types, to logged out visitors, or
-by a rule built on a kcode. It is set on the outermost `container-bg` element and enforced by the
-server, which removes the container - and everything nested inside it - when the rule does not
-match.
-
-Read **[references/targeting.md](references/targeting.md)** before writing any of it. The attribute
-names are only half of it: the rules combine in a way the editor's own panel does not suggest, and
-they fail silently in two opposite directions.
-
-## Multi-language sites
-
-An organisation makes a set of languages available, each a code and a title, and every request
-resolves to one active language. Mark an element `trans-lookup` and its text is replaced with the
-stored translation for that language as the page renders:
-
-```html
-<span class="trans-lookup" data-transcode="page-size">Page size</span>
-```
-
-The active language is resolved in this order, first non-blank wins: a `selectedLangCode` **query
-parameter**, a `selectedLangCode` **cookie** (what the language switcher sets), the logged in
-**profile's** preference, the **website's default language**, then the browser's
-**`Accept-Language`** header matched against the configured languages. If all five are blank,
-nothing on the site translates at all.
-
-A whole page can be translated as a file instead: `about-fr.html` beside `about.html` is rendered
-in its place whenever `fr` is active, using the original page's template.
-
-Read **[references/translations.md](references/translations.md)** when a site serves more than one
-language, when text is not translating or is translating in the wrong language, or when you are
-marking up a template so its wording can be translated: it covers the resolution order in full,
-the `trans-lookup` attributes, the language switcher, per-language page files, translating record
-fields with `translationService`, strings built in browser JavaScript, and the AI translate pass.
-
 ## Velocity syntax as Kademi uses it
 
 ```velocity
@@ -195,58 +71,6 @@ raw blocks and the Kademi-specific directives.
 
 Almost everything here fails silently: a wrong page with no error, no log line and no stack trace.
 These are the ones that cost the most time.
-
-### Pages and components
-
-- **The content editor repairs anything that does not match the container structure, and it cannot
-  be undone.** When a page is opened for editing, every top-level element of the body without a
-  `[data-type="container-content"]` descendant is swept into one synthetic container, as a single
-  rich-text block, appended at the **end** of the page. Every component in the non-conforming part
-  becomes inert markup, and it moves to the bottom.
-- **A component with no `data-dynamic-href` placeholder never renders.** The wrapper's `data-type`
-  is what the editor selects; the inner `<div data-dynamic-href="_components/<compId>">` is what
-  makes the server run the component's template. Miss it and the page just shows nothing there.
-- **Settings go on the wrapper, never on the inner placeholder**, and an attribute name the
-  component does not know is ignored in silence. Take names from the component's
-  `<compId>Settings.json` or its settings JavaScript.
-- **An `htmlPanel` with no `data-html` renders the words "This is sample content"** on the live
-  page. `data-html` is decoded with `decodeURIComponent`, so escaped HTML passes through unchanged
-  but a stray `%` in the copy breaks the decode - URI-encode the whole value in that case.
-- **An unresolved kcode removes the whole span it was in**, taking the label and layout around it
-  with it, so the page looks like it lost a section. The span also needs `class="kcode"`, not just
-  `data-kcode`, or it is never substituted at all.
-
-### Translations
-
-- **When no language resolves, nothing translates anywhere on the site.** No query parameter, no
-  cookie, no profile preference, no website default language and no matching `Accept-Language`
-  header leaves the active code null, and every page renders its source text with no error.
-- **`trans-lookup` on an element with child elements destroys them.** The lookup replaces the
-  element's whole text content, so it belongs on the leaf element holding the words.
-- **Marked-up text is only translated on a page that has at least one component.** The lookup runs
-  in the same render pass that expands components, and that pass exits early when no element on
-  the page carries `data-dynamic-href`.
-
-### Styling
-
-- **A bad theme parameter breaks the site's entire appearance, not one rule.** The parameters are
-  compiled into one document with the whole of Bootstrap, so an unknown `@variable` or invalid
-  value fails all of it, and the failure is served as an error message with a CSS content type and
-  a 200 status. The site appears unstyled with nothing to say why. The same applies to
-  `custom-styles.less`.
-- **`/theme/custom-styles.less` does nothing until it is declared** in the website's own
-  `/theme/dependencies.json`. There is no error; the rules simply never apply.
-- **A `dependencies.json` with any bad key is discarded whole**, so every asset that app declared
-  vanishes at once. When *none* of an app's scripts or stylesheets load, suspect the file before
-  the paths.
-
-### Targeting
-
-- **A wrong group or org type name fails closed** - the container is removed and everyone sees a
-  page with a section missing. Group **names** are not the titles shown in the UI.
-- **A malformed advanced-visibility rule fails open** - a typo in `data-vis-comparator`, or a
-  missing `data-vis-value`, and the rule is skipped entirely and the container is shown to
-  everyone. Content meant to be restricted becomes public and the page looks normal.
 
 ### Velocity
 
@@ -335,25 +159,6 @@ resolved value in force rather than whatever the site's override file happens to
 **Assign services once, at the top.** A repeated `$services.someManager.find(...)` inside a
 `#foreach` is a lookup per row.
 
-### KCode
-
-Content authors have a **KCode** picker in KEditor, in dashboard content and in journey emails.
-KCode is dot-notation field navigation - the author clicks through *Current user -> Primary
-memberships -> First membership -> Membership organisation -> Full name* and Kademi renders the
-value in the saved content. It is an authoring feature, not a developer scripting language, and
-there is nothing to register for it. The one way an app extends it is by contributing fields a KCode
-can walk, which `kademi-journeys` covers under journey fields.
-
-It matters to you for three reasons. Authored content your templates render may contain KCode, so
-do not strip or re-encode saved page HTML. The context KCode resolves against comes from where the
-content is rendered: website content resolves against the current user, journey email content
-against the lead, so a path that works on a logged-in dashboard can be empty in an email. And on a
-page it is written as a span, while everywhere else - emails, SMS, certificates, journey action
-settings - it is written inline between `*|` and `|*` with no spaces inside the delimiters.
-
-See <https://docs.kademi.co/blogs/docs-kb/using-kcode/>, and the KCode section of
-[references/page-structure.md](references/page-structure.md) for the page form and its failure mode.
-
 ## KEditor components
 
 A component is a block an author drags onto a page. An app registers one line of JavaScript in
@@ -387,6 +192,10 @@ Author-set options arrive in the render template as camel-cased variables: a
     ...
 </div>
 ```
+
+A component renders inside the page container structure that `kademi-websites` owns; read
+[kademi-websites/references/page-structure.md](../kademi-websites/references/page-structure.md) before
+writing the markup a component expects to sit in.
 
 Read **[references/components.md](references/components.md)** when you are building a KEditor
 component, or when a registered one does not appear in the picker, renders without its
@@ -436,13 +245,16 @@ the JSON response shape and complete working examples.
 
 ## Related skills
 
-- **kademi-server-js** - reach for it when the work moves behind the template: the controller
-  that prepares the page's data, the endpoint a form posts to, or a service the template calls.
+- **kademi-websites** - when the work is the site rather than the template: a page and its container
+  structure, restyling through `theme-params.less` and `custom-styles.less`, the menu, content
+  targeting, translations, and the template chain a theme provides.
+- **kademi-server-js** - when the work moves behind the template: the controller that prepares the
+  page's data, the endpoint a form posts to, or a service the template calls.
 - **kademi-admin-ui** - when the screen is an admin console page rather than a website page:
   layout, tables, paginators, Kademi's admin UX conventions, and the browser-side globals.
 - **kademi-api-reference** - when you need to confirm a class or method, and its exact signature,
   before calling it from a template.
 - **kademi-journeys** - when the Velocity file you are editing is a journey node's configuration
   UI, or renders journey or lead data.
-- **kademi-app-development** - when the question is about the project layout around these files,
-  app ids and branches, syncing your changes to an account, or publishing them.
+- **kademi-app-development** - the project layout around these files, app ids and branches, syncing
+  your changes to an account, and publishing them.

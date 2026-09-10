@@ -1,6 +1,6 @@
 ---
 name: kademi-admin-ui
-description: Use when building or fixing a screen a Kademi administrator sees, or the browser JavaScript behind one - admin console pages, portlets that add a panel to a page owned by another app, and profile and organisation tabs. Covers the standard admin page shell, metric cards, notices, list pages and panel-wrapped tables, the shared macros the admin theme provides, the admin client-side globals (pageInitFunctions, Msg, Kalert, the forms plugin, reloadFragment, polling a background job, CSRF) and Kademi's admin UX rules. Use when an admin page looks wrong, a table or dialog misbehaves, or a panel needs to appear on a page owned by someone else. For website pages, Velocity syntax, or declaring browser assets, use kademi-themes instead.
+description: Use when building or fixing a screen a Kademi administrator sees, or the browser JavaScript behind one - admin console pages, portlets that add a panel to a page owned by another app, and profile and organisation tabs. Covers the standard admin page shell, metric cards, notices, list pages and panel-wrapped tables, the shared macros the admin theme provides, the admin client-side globals (pageInitFunctions, Msg, Kalert, the forms plugin, reloadFragment, polling a background job, CSRF) and Kademi's admin UX rules. Use when an admin page looks wrong, a table or dialog misbehaves, or a panel needs to appear on a page owned by someone else. For a website's own pages use kademi-websites; for Velocity syntax or declaring browser assets, kademi-themes.
 license: Apache-2.0
 metadata:
   author: kademi
@@ -269,8 +269,8 @@ or deciding how something should look, not after the markup exists.
   every admin page. Go there when a page 404s, a privilege check refuses, or a POST silently
   does nothing: that last one is almost always a registration problem, not a UI problem. It
   also owns the server half of background jobs.
-- **`kademi-themes`** - Velocity syntax and its traps, the full `dependencies.json` format,
-  and participant-facing website pages.
+- **`kademi-themes`** - Velocity syntax and its traps, and the full `dependencies.json` format.
+- **`kademi-websites`** - participant-facing website pages, their structure, look and menu.
 - **`kademi-api-reference`** - confirm a class or method exists, and its signature, before
   you call it from a template or handler.
 - **`kademi-app-development`** - project layout, where assets live, versioning and publishing

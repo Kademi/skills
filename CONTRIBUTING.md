@@ -52,6 +52,7 @@ file itself is misleading:
 | `kademi-nashorn.mdc` | `**/APP-INF/**/*.js`, `**/WEB-INF/**/*.js` | Same, plus ES5.1 and Java-value comparison rules |
 | `kademi-velocity.mdc` | `**/theme/**/*.html` | Looks like HTML; is a server-rendered Velocity template |
 | `kademi-controllers-xml.mdc` | `**/APP-INF/controllers.xml`, `**/WEB-INF/controllers.xml` | Decides the engine and which files load at all |
+| `kademi-ksync-internals.mdc` | `**/.ksync/**` | KSync's own bookkeeping; editing it corrupts the checkout |
 
 Keep rules short and make them **point at the skill** rather than restate it. A rule is the "you
 are about to get this wrong" note; the skill is the documentation.
