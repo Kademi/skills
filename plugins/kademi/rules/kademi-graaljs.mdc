@@ -3,6 +3,7 @@ description: Rules for Kademi server-side JavaScript running on the GraalJS engi
 alwaysApply: false
 globs:
   - "**/APP-INF/**/*.mjs"
+  - "**/WEB-INF/**/*.mjs"
 ---
 
 # Kademi server JS: GraalJS (.mjs)

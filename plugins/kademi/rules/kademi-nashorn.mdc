@@ -3,6 +3,7 @@ description: Rules for Kademi server-side JavaScript running on the legacy Nasho
 alwaysApply: false
 globs:
   - "**/APP-INF/**/*.js"
+  - "**/WEB-INF/**/*.js"
 ---
 
 # Kademi server JS: Nashorn (.js)

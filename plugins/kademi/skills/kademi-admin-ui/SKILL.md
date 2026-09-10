@@ -204,8 +204,43 @@ ancestor; use `Msg.*` for transient feedback and `Kalert.confirm` for destructiv
 refresh with `reloadFragment()` instead of `window.location.reload()`; drive form submits
 with the `forms()` plugin rather than hand-rolled AJAX. Read
 [references/client-side.md](references/client-side.md) before writing any browser JS or CSS
-for an admin page - for the exact signatures, the CSRF header, form validation and
-serialization timing, polling a background job, and the `Kalert.confirm` argument trap.
+for an admin page - for the exact signatures, form validation and serialization timing,
+re-binding after a fragment reload, polling a background job, and the CSRF split between the
+admin console and the website.
+
+## Gotchas
+
+Four traps that cost an afternoon each. They are all in
+[references/client-side.md](references/client-side.md) in full; these are the short forms.
+
+**`Kalert.confirm` breaks with four or more arguments.** The long form
+`Kalert.confirm(title, message, type, btnClass, btnText, callback)` looks like the real
+signature and gets copy-pasted, but any call past three arguments reaches an unscoped
+reference in the bundled dialog library and throws `ReferenceError: logStr is not defined`.
+The dialog never opens, and from inside a click handler the button simply appears dead. Use
+`(message, callback)` or `(message, confirmButtonText, callback)` only - they already default
+to a warning icon and a red confirm button.
+
+**Poll a background job by job id, never by task name.** Have the server hand back the job id
+and poll `/job-manager/` with it. Polling `/tasks/{taskName}` resolves by name, and every run
+of a task shares one name, so a poll landing in the gap between submitting a run and it being
+picked up is answered with the *previous* run - which is complete. The caller cannot tell the
+two apart, decides the job finished instantly, and acts on stale data.
+
+**`reloadFragment` kills handlers bound directly to what it replaced.** The element needs an
+id, and everything bound to nodes inside it - click handlers, `forms()`, `bootstrapSwitch()`,
+pickers - dies with the old markup. Delegate from a stable ancestor so nothing needs
+re-binding, or re-apply the initialisers in the plugin's `whenComplete` callback, scoped to
+the container. Re-running a page-wide init after a partial reload double-binds everything that
+was not replaced, and the duplicate-fire shows up much later than the change that caused it.
+
+**The CSRF token is website-only.** `csrfToken` and the ajax prefilter that sends `K-CSRF` live
+in the website theme. The admin console has neither, and admin POSTs send no header; they are
+covered instead by the platform's origin-header check, which runs on every state-changing
+request on both domains and needs nothing from your code. Do not add a token header to admin
+ajax - `csrfToken` is undefined there and the line is dead code. Code in `common/` runs on both
+sides, so guard the lookup:
+`typeof csrfToken === 'undefined' ? {} : { 'K-CSRF': csrfToken }`.
 
 ## UX standards
 

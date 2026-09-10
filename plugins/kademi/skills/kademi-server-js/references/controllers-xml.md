@@ -1,10 +1,19 @@
 # controllers.xml
 
-The registration and wiring file for a Kademi app, at `APP-INF/controllers.xml`. It declares the
-engine, the script files to load, lifecycle callbacks, admin menu items, roles, and the app
-settings page. It deserialises into
+The registration and wiring file for a Kademi app, at `/APP-INF/controllers.xml` in an app or lib
+and `/WEB-INF/controllers.xml` in a website. It declares the engine, the script files to load,
+lifecycle callbacks, admin menu items, roles, and the app settings page. It deserialises into
 [ControllerMappingList](https://docs.kademi.co/ref/templating/md/ControllerMappingList.md) - the
 same object your JS sees as the `controllerMappings` global.
+
+Both locations are the same schema and the same class, so everything below applies to a website's
+`/WEB-INF/controllers.xml` unchanged. The account's `queries` repository is the exception: its
+`/controllers.xml` is a different, much smaller schema - see [surfaces.md](surfaces.md).
+
+**Read the file before you change it.** This is the one file where a mistake stops the whole app
+loading rather than breaking one feature, and an app that fails to initialise reports it as an init
+error rather than by working slightly less well. Change the least you can, and keep the existing
+formatting and element order.
 
 ## Root element
 
@@ -45,8 +54,13 @@ Under GraalJS the named function must be on `globalThis`.
 <source>/APP-INF/app.js</source>
 ```
 
-Files load in declaration order, so put dependencies first. Under GraalJS declare only the single
-`.mjs` entrypoint; it imports the rest.
+Files load in declaration order, so a file must be declared after anything it depends on at load
+time. Under GraalJS a single `.mjs` entrypoint is usually enough; it imports the rest.
+
+Every path here must exist. The app initialises the moment this file is written, and a `<source>`
+naming a file that is not there yet is not waited for: GraalJS fails initialisation naming the file,
+Nashorn logs one warning and initialises without it. Write the scripts first - see
+[surfaces.md](surfaces.md).
 
 ## Menu items
 
@@ -63,8 +77,8 @@ Files load in declaration order, so put dependencies first. Under GraalJS declar
 ```
 
 `parentId` must name an existing menu group, for example `menuRoot`, `menuECommerce`,
-`menuGroupsUsers` or `menuWebsiteManager`. `ordering` sorts within the parent, lowest first.
-`<roles>` restricts visibility; omit it and the item shows to anyone who can reach the section. A
+`menuGroupsUsers`, `menuWebsiteManager` or `menuDev`. `ordering` sorts within the parent, lowest
+first. `<roles>` restricts visibility; omit it and the item shows to anyone who can reach the section. A
 child of an already-restricted parent does not need its own roles. See
 [AppMenuItem](https://docs.kademi.co/ref/templating/md/AppMenuItem.md).
 

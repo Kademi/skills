@@ -1,6 +1,6 @@
 ---
 name: kademi-server-js
-description: Use when writing or debugging the server-side JavaScript of a Kademi app - anything under APP-INF/, and the controllers.xml that registers it. Covers choosing the engine (engineVersion 2.0 is GraalJS and .mjs, 1.1 or unset is Nashorn and .js), the sandbox, registering controllers, menus, roles, components and services, website and admin routes, path resolvers versus GET handlers, POST handling and validation, roles and privileges, app settings, saved queries and custom index fields, the JSON database and user and membership APIs, background async jobs, sending and receiving email, and OAuth 2, CSRF and brute-force hardening. Use when a route 404s, a POST silently does nothing, a privilege check unexpectedly returns 403, a script needs to run in the background, or a server-side error needs tracking down.
+description: Use when writing or debugging the server-side JavaScript of a Kademi app, lib or website - anything under APP-INF/ or a website's WEB-INF/, the controllers.xml that registers it, and the account's queries repository. Covers where server code can live and what each place can register, choosing the engine (engineVersion 2.0 is GraalJS and .mjs, 1.1 or unset is Nashorn and .js), the sandbox, registering controllers, menus, roles, components and services, website and admin routes, path resolvers versus GET handlers, POST handling and validation, roles and privileges, app settings, saved queries and custom index fields, the JSON database and user and membership APIs, background async jobs, sending and receiving email, and OAuth 2, CSRF and brute-force hardening. Use when a route 404s, a POST silently does nothing, a privilege check unexpectedly returns 403, a script needs to run in the background, or a server-side error needs tracking down.
 license: Apache-2.0
 metadata:
   author: kademi
@@ -13,10 +13,74 @@ Server-side JS runs inside the Kademi platform, in a sandboxed engine, with a se
 globals bound into it. It is not Node. There is no `require`, no npm, no filesystem, no
 `java.*`.
 
+## Where server code lives
+
+Three places in an account can hold server-side JavaScript, and all three extend the platform the
+same way: a `controllers.xml` registering what the code provides, next to the scripts that implement
+it.
+
+| Where | Config file | Global |
+|---|---|---|
+| An app or lib repository | `/APP-INF/controllers.xml` | `controllerMappings` |
+| A website repository | `/WEB-INF/controllers.xml` | `controllerMappings` |
+| The account's `queries` repository | `/controllers.xml` at the root | `queries` |
+
+**A website registers through the same class an app does.** `/WEB-INF/controllers.xml` deserialises
+into the same
+[ControllerMappingList](https://docs.kademi.co/ref/templating/md/ControllerMappingList.md), and the
+platform loads and initialises the two the same way, so a website can register most of what an app
+can: routes, portlets, components, event listeners, journey node types, payment providers. Almost
+nobody knows this. If you have only ever built websites, these extension points were open to you the
+whole time. Three things are read from app repositories only, so they need an app: **JS services**
+(`services.yourService`), **query tables**, and **admin menu items** (a website's `<menu>` entries
+reach the website menu only). Everything else in this skill applies to `/WEB-INF/` unchanged. Build an
+app when the feature could be reused or installed elsewhere, or needs one of those three; build it
+into the website when it only makes sense for that one site.
+
+**The `queries` repository is not an app and does not behave like one.** Its config is
+`/controllers.xml` at the root with a different and much smaller schema (sources, tables, metrics,
+data series content, product category content, and nothing else); the engine is always Nashorn at
+ES2015, with no `engineVersion` attribute and no `.mjs`; the global is `queries`, not
+`controllerMappings`; and **every write is live**, because only the live version is ever read, so
+there is no draft version to try something on and the isolation that protects an app does not apply.
+Know that before you write into it, not after.
+
+### Write the scripts before the controllers.xml that names them
+
+`controllers.xml` is a list of files to load, and the app initialises the moment it is written. A
+controllers.xml naming a script that does not exist yet does not wait for it, and **the two engines
+fail differently**:
+
+- **GraalJS** refuses to initialise, every time, naming the app and the missing file.
+- **Nashorn logs one warning and carries on.** The line in the account log reads `Source file is
+  empty or missing: <path>`, without the app name. The app initialises, reports no init error, and
+  everything that file would have registered simply is not there - no route, no service, no
+  component, no listener.
+
+The Nashorn case is the dangerous one, because Nashorn is what you get when `engineVersion` is
+unset, and a mistyped source path looks exactly like a working app with a feature missing. If a
+registration is absent for no apparent reason, check the source paths in `controllers.xml` before
+anything else.
+
+Either way it is not a broken app, it is an app you have not finished writing. Sync the scripts
+first, then the controllers.xml that declares them.
+
+### A disabled app keeps all its code and registers none of it
+
+Every file in a disabled app is still there and still readable, and nothing it registers exists: no
+route, no component, no query table, no listener. When source and runtime disagree, the runtime is
+right. Code from a disabled app is also the code least worth copying, because nothing has kept it
+correct.
+
+Read [references/surfaces.md](references/surfaces.md) when you are deciding where a piece of code
+belongs, creating a repository or choosing its kind, working in a website's `/WEB-INF/`, or writing
+anything into the account's `queries` repository.
+
 ## Pick the engine first
 
-Open your app's `APP-INF/controllers.xml` and read `engineVersion` on the root `<controllers>`
-element. It decides the file extension, and you do not get to choose per file.
+Read `engineVersion` on the root `<controllers>` element of `/APP-INF/controllers.xml`, or of
+`/WEB-INF/controllers.xml` in a website. It decides the file extension, and you do not get to
+choose per file.
 
 | `engineVersion` | Engine | Extension | Language |
 |---|---|---|---|
@@ -311,6 +375,13 @@ Read [references/queries.md](references/queries.md) when a task involves searchi
 over records: saved search queries, custom indexed fields, query tables and criteria queries, or
 a search that returns the wrong rows.
 
+Two query-table traps worth knowing before you open it. **The loader signature differs by where the
+table is registered**: an app, lib or website loader is `(start, maxRows, rowsResult, rootFolder,
+status, params)`, and a `queries` repository loader is `(rowsResult, rootFolder, status, params)` -
+copy one into the other and `rowsResult` is bound to the number `0`. And **a loader that throws
+comes back as data**: the platform catches it and returns the exception text as the table's cells,
+so nothing turns red and the app still initialises. Run the table, do not assume it.
+
 Read [references/data-apis.md](references/data-apis.md) when a task involves storing or reading
 your app's own data: the JSON database, the user and membership API, and custom index fields.
 
@@ -350,12 +421,27 @@ machine-called endpoint needs), and brute-force protection.
 
 ## When it fails on a live account
 
-The response tells you almost nothing: an uncaught exception becomes a 500 error page with the
-status code and no message. Reach for a **debug session** first - started from the admin
-console's developer tools and scoped to a path prefix or task name, it captures the request,
-its parameters, the authenticated user, timings and every log line that one operation wrote,
-including debug levels the account log discards. The account log is the fallback for failures
-you cannot reproduce on demand.
+**Did the app load at all?** Ask that first after any change to a script or to `controllers.xml`.
+Scripts are parsed and registrations run when the app initialises, and if that fails the app does
+not half work: it does not load, and everything it registers silently disappears. The symptom then
+turns up somewhere else entirely - a menu item gone, a page 404ing, a component missing from the
+picker - and people debug that for an hour. The platform records what happened, per repository. In
+the admin console, open **Websites & apps > Apps**, find the app and open its initialisation
+details: init error, init date and init logs. The Dev tools page at `/dev-tools` on the admin domain,
+linked from the Developer hub, shows the same for any repository you pick. There is no file for this,
+and nothing to sync.
+Read the init error before anything else - it usually names the file and the line.
+
+An app that initialises is not an app that works. Initialising means the registrations ran, not
+that the code they registered does anything. Anything called later - a query table loader, an event
+listener, a scheduled job - has to be run before you can say you checked it.
+
+For a failure at request time the response tells you almost nothing: an uncaught exception becomes a
+500 error page with the status code and no message. Reach for a **debug session** - started from
+the admin console's developer tools and scoped to a path prefix or task name, it captures the
+request, its parameters, the authenticated user, timings and every log line that one operation
+wrote, including debug levels the account log discards. The account log is the fallback for
+failures you cannot reproduce on demand.
 
 Read [references/troubleshooting.md](references/troubleshooting.md) when something throws, 404s
 or returns null on a hosted account and you need to find out why: where the error surfaces, what

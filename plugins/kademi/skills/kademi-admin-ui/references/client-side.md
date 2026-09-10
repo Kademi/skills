@@ -23,7 +23,7 @@ the matching library to `appDependencies` before using them.
 | `showStandardError` | theme utilities | standard "something went wrong" toast |
 | `$.fn.forms` | `jquery-forms-lib` | form submit, validation and error display |
 | `$.fn.reloadFragment` | `jquery-reloadFragment-lib` | reload one element from the server |
-| `csrfToken` | theme | CSRF token string, on every page |
+| `csrfToken` | website theme | CSRF token string - **website pages only**, see below |
 | `flog` | theme utilities | console logging that respects the debug flag |
 
 Prefer the **Fetch API** for new HTTP calls. jQuery's `$.ajax` is still used widely and is
@@ -109,12 +109,20 @@ Kalert.confirm('This will permanently discard the preview. This cannot be undone
     });
 ```
 
-**Never call the six-argument form** `Kalert.confirm(title, message, type, btnClass, btnText,
-callback)`. It hits a bug in the bundled dialog library: an unscoped reference throws
-`ReferenceError` when the call is made synchronously from inside a jQuery click handler, so
-the dialog never opens. This keeps recurring because the broken form gets copy-pasted. The
-two and three argument forms already default to a warning icon and a red confirm button, so
-the extra arguments buy nothing - if you need a custom title, fold it into the message.
+**Never call it with four or more arguments.** The long form
+`Kalert.confirm(title, message, type, btnClass, btnText, callback)` looks like the complete
+signature and is what gets copy-pasted, but anything past three arguments takes a branch that
+passes your `type` straight through to the bundled dialog library, where an unscoped `logStr`
+reference throws:
+
+```
+Uncaught ReferenceError: logStr is not defined
+```
+
+The dialog never opens. Called synchronously from inside a jQuery click handler that is the
+whole failure: the click appears to do nothing at all. The two and three argument forms
+already default to a warning icon and a red `btn-danger` confirm button, so the extra
+arguments buy nothing. If you want a custom title, fold it into the message text.
 
 Related: `Kalert.info`, `Kalert.success`, `Kalert.warning`, `Kalert.error` for a plain
 acknowledgement dialog, `Kalert.confirmWait` for a confirm that keeps the dialog open with a
@@ -200,14 +208,42 @@ page is sitting on, and the tab initialiser only falls back to the first tab whe
 hash at all - so a reload with a hash matching no tab returns a page with every tab pane
 hidden. It also loses scroll position and re-runs every page initialiser.
 
-When you replace a fragment, any handler bound **directly** to an element inside it dies with
-the old markup. Either delegate from a stable ancestor, or re-apply the element-bound
-initialisers scoped to the reloaded container so nothing outside it gets bound twice:
+The element you reload **must have an id**. The plugin re-requests the current page and copies
+the matching element out of the response, so it can only find your fragment by id, and it
+silently warns and skips an element without one.
+
+### Re-binding after a swap
+
+`reloadFragment` replaces the markup inside the element. Any handler bound **directly** to an
+element inside it dies with the old markup, and so does every jQuery plugin that had decorated
+those nodes. Two ways out, in order of preference:
+
+**Delegate from a stable ancestor.** A delegated handler is bound to the ancestor, not to the
+replaced nodes, so it survives any number of reloads and needs no re-binding at all. Make this
+the default.
 
 ```js
-// preferred: survives any number of fragment reloads
 $(document).on('click', '#users-list .btn-remove', function () { ... });
 ```
+
+**Or re-apply the element-bound initialisers**, scoped to the reloaded container so nothing
+outside it gets bound twice. Plugin inits are the usual casualties - `forms()`, `domFinder()`,
+`bootstrapSwitch()`, date pickers, tooltips. Hang them off the plugin's `whenComplete` callback
+so they run against the new markup:
+
+```js
+$('#users-list').reloadFragment({
+    whenComplete: function () {
+        var container = $('#users-list');
+        container.find('form').forms({ onSuccess: onUserSaved });
+        container.find('input[type=checkbox]').bootstrapSwitch();
+    }
+});
+```
+
+Scope every selector to the container. Re-running a page-wide init after a partial reload binds
+a second handler to everything that was *not* replaced, and the symptom - one click firing the
+action twice, then three times - shows up long after the change that caused it.
 
 ## AJAX and fetch
 
@@ -228,9 +264,14 @@ $.ajax({ url: '/check-status/' })
     });
 ```
 
-With Fetch, send the `K-CSRF` header on any POST, and check **both** the HTTP status and the
-`status` field in the JSON body - a validation failure comes back as HTTP 200 with
-`status: false`.
+Check **both** the HTTP status and the `status` field in the JSON body - a validation failure
+comes back as HTTP 200 with `status: false`.
+
+### The CSRF token is website-only
+
+On a **website** page, send the `K-CSRF` header on any POST. `csrfToken` is a global there, and
+the website theme also installs a jQuery prefilter that adds the header to `$.ajax` calls for
+you, so only Fetch needs it by hand.
 
 ```js
 fetch('/check-status/', {
@@ -248,8 +289,17 @@ fetch('/check-status/', {
     .catch(() => showStandardError('checking status'));
 ```
 
-`csrfToken` is a global on every page, so any file loaded through `dependencies.json` can
-use it.
+On an **admin console** page there is no token. `csrfToken` is not defined, no prefilter is
+installed, and admin POSTs send no header. That does not leave the admin domain unprotected: the
+platform checks the browser's origin headers on every state-changing request, on both domains,
+before the handler runs, and the token is defence in depth on top of that for website XHR. Do
+not add a token header to admin code: `csrfToken` is undefined there and the line is dead. A
+file in `common/` runs on both sides, so guard the lookup rather than assuming the global
+exists:
+
+```js
+var headers = typeof csrfToken === 'undefined' ? {} : { 'K-CSRF': csrfToken };
+```
 
 ## Polling a background task
 
@@ -290,10 +340,11 @@ function pollJob(jobId) {
 }
 ```
 
-**Do not poll by task name.** A task name is shared by every run of that task, so a poll made
-in the gap between submitting a run and it being picked up is answered with the *previous*
-run - which is complete. The caller cannot tell the two apart, concludes the task finished
-instantly, and acts on stale data. A job id identifies one run and has no such ambiguity.
+**Do not poll `/tasks/{taskName}`.** That resolves a job by task name, and every run of a given
+task shares one name, so a poll made in the gap between submitting a run and it being picked up
+is answered with the *previous* run - which is complete. The caller cannot tell the two apart,
+concludes the task finished instantly, and acts on stale data. A job id identifies one run and
+has no such ambiguity. Poll `/job-manager/` with the id, always.
 
 `statusMessage` is whatever the task last reported, or null for a task that reports no
 progress. It is refreshed by a background scanner every few seconds, so it lags slightly and
@@ -319,3 +370,10 @@ value in polling faster than about once a second.
   `success`, `danger`, `warning`, `info` and `default` applies where.
 - Name classes as generally as you can without being too broad, and keep layout logic in one
   place rather than duplicating it per page.
+
+## When your change does not show up
+
+Admin JavaScript is served in a combined bundle that the browser is told to cache for a week, so an
+already-open tab keeps running the old code after a sync whatever version the app carries. Hard
+refresh before concluding the change did not work, and look for your file's path inside one of the
+combined `/theme/...` URLs in the page source to confirm the bundle picked it up.

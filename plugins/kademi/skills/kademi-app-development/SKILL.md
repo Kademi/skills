@@ -1,6 +1,6 @@
 ---
 name: kademi-app-development
-description: Use when someone is getting started with Kademi, or is working on a Kademi app as a package rather than on the code inside it. Covers what Kademi is and its account, organisation, website and profile model; how a repository app is laid out; whether the work belongs in a website, an app, a lib or a theme; setting up KSync and syncing to a hosted account; and creating versions and publishing to the Marketplace. Use on first contact with Kademi, including someone who only wants to build or restyle a website on it, when someone asks what a Kademi term means, how a Kademi app is structured, or how to set up, sync, version, deploy or publish one - including when they do not name Kademi but are clearly working in a Kademi repository. For writing the code inside an app, this skill names the specialist skill to use instead.
+description: Use when someone is getting started with Kademi, or is working on a Kademi app as a package rather than on the code inside it. Covers what Kademi is and its account, organisation, website and profile model; how a repository app is laid out; whether the work belongs in a website, an app, a lib or a theme; setting up KSync and syncing to a hosted account; and creating versions and publishing to the Marketplace, plus promoting configuration between a development account and production with snapshots and diffs. Use on first contact with Kademi, including someone who only wants to build or restyle a website on it, when someone asks what a Kademi term means, how a Kademi app is structured, or how to set up, sync, version, deploy or publish one - including when they do not name Kademi but are clearly working in a Kademi repository. For writing the code inside an app, this skill names the specialist skill to use instead.
 license: Apache-2.0
 metadata:
   author: kademi
@@ -27,8 +27,42 @@ Two consequences shape all Kademi development:
 - **The account is the runtime.** There is no local server. You edit files locally and sync them to
   a real account.
 - **Accounts are the unit of environment.** Teams typically run a development or staging account
-  alongside production, and promote app configuration between them with a configuration snapshot:
-  <https://docs.kademi.co/blogs/docs-kb/configuration-management/>
+  alongside production, and promote configuration between them rather than rebuilding it by hand.
+  See "Promoting configuration between environments" below.
+
+## What was actually asked for
+
+People ask for outcomes. Kademi implements capabilities. The two do not share a vocabulary, and
+taking the words at face value is how you conclude something is impossible when it is only called
+something else.
+
+**Loyalty is the clearest case. On Kademi loyalty is a product of engagement - incentives,
+knowledge, content and communications - and is not a feature.** There is no loyalty app and no
+loyalty setting. Searching the installed apps or the Marketplace for "loyalty" finds nothing, and
+nothing is precisely the wrong answer, because the account very probably has everything needed to
+build one already.
+
+Engagement, advocacy, enablement, retention and "channel programme" are the same kind of word. They
+name a result somebody wants, not a thing to switch on. So decompose first, and choose what to
+build second:
+
+| They asked for | Built from | Which on Kademi means |
+|---|---|---|
+| Loyalty, engagement, advocacy | Incentives, knowledge, content, communications | Points and rewards, training programs, website content, email |
+| Enablement | Training, and the content that carries it | Training programs and the pages a module is made of |
+| A channel programme | Usually all of the above, with sales data behind it | Several of those, plus sales records and the claims submitted against them |
+
+Two rules follow.
+
+**Never conclude Kademi cannot do something because a search for the word returned nothing.** Search
+for the mechanism, not the outcome - "points", "rewards", "training", "journey" - and check what is
+already installed on the account for those. Most of what a request needs is usually there.
+
+**Say the decomposition back before you build on it.** "A loyalty programme here means points and
+rewards for the behaviour you want, training so they know the product, and communications that keep
+them coming back - is that the shape you had in mind?" is a better second message than a plan
+resting on a guess about what they meant. It also tells you how much is new code: often the answer
+is a small app filling one gap between capabilities that already exist.
 
 ## Anatomy of a repository app
 
@@ -119,23 +153,30 @@ which URL a file in the repository is served at.
 
 ## Website vs app vs lib vs theme
 
-All three are the same file structure, in the same Marketplace, published the same way. What
-differs is what the repository declares itself to provide, which you set in the App Builder when
-you create it.
+These are the same file structure, in the same Marketplace, published the same way. What differs is
+what the repository declares itself to provide, which you set in the App Builder when you create
+it.
 
 | | Build one when | Installed by |
 |---|---|---|
 | **App** | You are delivering a feature an account administrator would recognise and choose to turn on: a claims process, a quiz, a payment provider, an integration | The account, from the Marketplace. Appears in the account's app list |
 | **Lib** | You are delivering something other apps consume rather than something a user turns on: shared services, a wrapped third-party JS library, common templates | Pulled in automatically as a dependency of an app that names it |
 | **Theme** | You are delivering the look of a website: master template, page templates, LESS, fonts, images. Usually no server-side code at all | Selected as a website's theme |
+| **Recipe** | You are delivering a whole solution rather than one feature: the solution wizard uses it to create and configure one or more complete websites | Run once by the wizard to build a site, rather than installed and left in place |
 
 A **website** is none of these, and it is the first thing a site builder touches. It is a repository
 too, but one created in the admin console rather than the App Builder, with no version to publish to
 the Marketplace. It holds the site's pages and the files that override its theme -
 `/theme/theme-params.less`, `/theme/custom-styles.less`, `/theme/menu.json`, and any theme template
 the site replaces. If the task is a page, the menu or the look of the site, you are working in the
-website repository and `kademi-themes` is the skill. You need an app only when the site needs
-behaviour no installed app provides.
+website repository and `kademi-themes` is the skill. A website is not limited to pages and styling,
+though: it registers through its own `/WEB-INF/controllers.xml` using the same registration API an
+app uses in `/APP-INF/controllers.xml`, so **a website can register most of what an app can** -
+routes, portlets, event listeners, journey node types, payment providers, components. See
+`kademi-server-js` for how, and for the three things only an app can provide: JS services, query
+tables and admin menu items. The other reason to build an app is reuse: an app is versioned,
+published and installable on another account, and a website's registrations belong to that one
+site.
 
 Notes that decide the choice in practice:
 
@@ -172,6 +213,36 @@ from Marketplace Details.
 
 Read [references/publishing.md](references/publishing.md) when you are cutting a new version,
 publishing an app for the first time, or releasing an update to one already on the Marketplace.
+
+## Promoting configuration between environments
+
+Publishing moves your code. It does not move the configuration around it - app settings, queries,
+dashboards, KCodes, journeys, points rules - and on a client with a dev account and a production
+account, that configuration is the other half of a release. Snapshots are how it travels: capture
+the account's configuration at a moment, diff two snapshots to see exactly what changed, then
+record a decision against each part of that diff and export it.
+
+This is an admin console workflow, at **Settings > Configurations**
+(`/account-settings/config-management`). **There is nothing here to sync** - snapshots and diffs
+are account state, not repository files.
+
+Four things trip people up:
+
+- **Configuration is structure, not data or content.** Profiles, sales records, points balances,
+  blog articles and running promotions are all deliberately out of scope. "Why did my article not
+  come across" is answered, not investigated.
+- **Take the "before" snapshot before the work starts.** Without it there is nothing to diff
+  against afterwards, and it cannot be recreated later.
+- **Trust flows one way.** A higher environment may read a lower one - the apply job runs on the
+  target and pulls from the source. A lower environment must never reach a higher one; dev does not
+  hold production credentials.
+- **Your app is only promotable if it says so.** An app that registers no
+  `appendConfigFunction` contributes nothing to a snapshot, and one with no `applyConfigFunction`
+  turns every change it owns into a manual step on the target.
+
+Read [references/config-promotion.md](references/config-promotion.md) when a client is moving work
+between accounts, when something did or did not travel and you need to know why, or when you are
+making your own app's entities promotable.
 
 ## Which skill do I need?
 

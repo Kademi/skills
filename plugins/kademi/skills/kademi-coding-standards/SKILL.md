@@ -1,6 +1,6 @@
 ---
 name: kademi-coding-standards
-description: Kademi's house coding standards, and the review that checks code against them. Use before finishing any change to a Kademi app, lib or theme, and whenever asked to review, check, audit, lint or sanity-check Kademi code, or asked "is this the right way to do it on Kademi". Names every house rule and where it is documented - service and manager API design, controller versus service separation, transactions, error handling, Nashorn versus GraalJS, logging, client-side JavaScript, LESS and CSS - and carries the runnable review to run over changed files before handing work back.
+description: Kademi's house coding standards, the review that checks code against them, and how to confirm a change actually works before handing it over. Use before finishing any change to a Kademi app, lib or theme, whenever asked to review, check, audit, lint or sanity-check Kademi code, asked "is this the right way to do it on Kademi", or asked whether something was tested. Names every house rule and where it is documented - service and manager API design, controller versus service separation, transactions, error handling, Nashorn versus GraalJS, logging, client-side JavaScript, LESS and CSS - carries the runnable review to run over changed files, and covers verifying the result on the account - that the app still loads, that each registration is live rather than merely written in a file, and what to run to prove the code itself works. For tracking down a server-side failure, use kademi-server-js.
 license: Apache-2.0
 metadata:
   author: kademi
@@ -12,6 +12,12 @@ metadata:
 **To review code, go straight to [references/review.md](references/review.md).** It is the runnable
 checklist: searches that find each violation, plus the read-the-code checks no search can do. Run it
 over the files you changed before handing work back.
+
+**To check that the change actually works, read
+[references/verification.md](references/verification.md).** There is no build and no test suite: the
+account is the runtime, and it is the only thing that can tell you. Read it after any change to a
+script or to `controllers.xml`, when a change appears to have had no effect, and before reporting
+work as done.
 
 This page is the index of the standards themselves. Each one is documented where the code gets
 written, so that a developer working on a theme is not reading service-design rules - follow the
@@ -83,3 +89,22 @@ whole result sets, never a credential.
 
 **Money.** `BigDecimal` via `formatter.toBigDecimal(...)`, then `.multiply(...)` / `.add(...)`.
 Native JS arithmetic on a Java `BigDecimal` silently converts to a float.
+
+## Code nobody has run is a suggestion
+
+Two facts decide most of what "done" means here, and both say the same thing: the source file is not
+the evidence.
+
+- **A `controllers.xml` that names a script file which does not exist does not wait for it.** On
+  Nashorn, the default engine, the file is skipped with one warning in the account log and the app
+  initialises with everything that file would have registered silently absent; on GraalJS the app
+  fails to initialise, naming the file. Either way it is an unfinished app, not a broken one. Write
+  the scripts before the `controllers.xml` entry that declares them.
+- **A disabled app keeps its whole repository and registers nothing.** Every file is present and
+  syncs normally while nothing in it is in effect. The runtime says what is registered; the
+  repository does not.
+
+So the last step of a change is not "the files are on the server", it is "the app initialised, the
+registration is listed, and I ran the thing". [references/verification.md](references/verification.md)
+is how to do each of those with an administrator login, and what to say about the checks you did not
+run.

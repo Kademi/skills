@@ -3,6 +3,7 @@ description: controllers.xml is the manifest of a Kademi app - it decides the JS
 alwaysApply: false
 globs:
   - "**/APP-INF/controllers.xml"
+  - "**/WEB-INF/controllers.xml"
 ---
 
 # Kademi controllers.xml

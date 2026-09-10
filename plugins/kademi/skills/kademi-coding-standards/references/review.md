@@ -136,3 +136,17 @@ No search finds them.
 - [ ] Velocity: services looked up once at the top, paginator for lists, `standardTable` for
       tables.
 - [ ] New app, lib or theme? `engineVersion="2.0"` and `.mjs`. Existing app? Leave it on Nashorn.
+
+## 9. Then check it actually works
+
+The searches above read the files. None of them proves the account did anything with them, and a
+change that does not load produces no search hit at all. Before you hand the work back, run the
+three checks in [verification.md](verification.md):
+
+- [ ] The app initialised - no init error, and an init date later than your last sync.
+- [ ] Everything you registered is listed against the app at `/dev-tools`, not just written in a
+      file.
+- [ ] You ran the code itself at least once - the route, the POST, the query table, the expression -
+      and read the result.
+
+Then say which of the three you did, and which you did not.

@@ -4,6 +4,24 @@ Server-side JavaScript runs on the server, so a failure does not appear in the b
 This is where it does appear, and what you can see of it with an ordinary administrator login on
 your own account.
 
+## Start with the init error
+
+Before anything else, after any change to a script or to `controllers.xml`: did the app load? Its
+scripts are parsed and its registrations run when it initialises, and if that fails the app does not
+half work - it does not load, and everything it registers disappears at once. The symptom is then a
+mysterious absence somewhere else: a menu item gone, a page 404ing, a component missing from the
+picker, `services.thatService` undefined.
+
+**In the admin console**, open **Websites & apps > Apps**, find the app and open its initialisation
+details: the init error, the date it last initialised, and its init logs. The Dev tools page at
+`/dev-tools` on the admin domain, linked from the Developer hub, shows the same for any repository. There is no
+file for any of this and nothing to sync. The init error usually names the file and the line, and it
+is the difference between a minute and an hour.
+
+Initialising is not working. It means the registrations ran, not that the code they registered does
+anything - anything called later, a query table loader, an event listener, a scheduled job, still
+has to be run before you can say you checked it.
+
 ## Where an exception surfaces
 
 **Not in the response.** An uncaught exception in a controller function becomes a 500, and the
@@ -123,8 +141,10 @@ Two habits that catch it:
 
 ## A workable order to attack it in
 
-1. Does anything else in the app work? No: suspect a parse error or the wrong extension, and look
-   at the log from the moment the app was last enabled or updated.
+1. Read the app's init error first. Nothing else in the app working, or a whole feature simply
+   absent, is a failure to initialise - a parse error or the wrong file extension - and the init
+   error names it. The account log from the moment the app was last enabled or updated says the
+   same thing at more length.
 2. Start a debug session scoped to the path or task name, and reproduce. Read the captured
    operation: the parameters, the authenticated user, and every log line the operation wrote.
 3. No log line at all from your code? The code never ran. Check that the route matched, that the

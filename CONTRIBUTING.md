@@ -48,10 +48,10 @@ file itself is misleading:
 
 | Rule | Fires on | Because |
 |---|---|---|
-| `kademi-graaljs.mdc` | `**/APP-INF/**/*.mjs` | Looks like Node; is a sandboxed GraalJS engine |
-| `kademi-nashorn.mdc` | `**/APP-INF/**/*.js` | Same, plus ES5.1 and Java-value comparison rules |
+| `kademi-graaljs.mdc` | `**/APP-INF/**/*.mjs`, `**/WEB-INF/**/*.mjs` | Looks like Node; is a sandboxed GraalJS engine |
+| `kademi-nashorn.mdc` | `**/APP-INF/**/*.js`, `**/WEB-INF/**/*.js` | Same, plus ES5.1 and Java-value comparison rules |
 | `kademi-velocity.mdc` | `**/theme/**/*.html` | Looks like HTML; is a server-rendered Velocity template |
-| `kademi-controllers-xml.mdc` | `**/APP-INF/controllers.xml` | Decides the engine and which files load at all |
+| `kademi-controllers-xml.mdc` | `**/APP-INF/controllers.xml`, `**/WEB-INF/controllers.xml` | Decides the engine and which files load at all |
 
 Keep rules short and make them **point at the skill** rather than restate it. A rule is the "you
 are about to get this wrong" note; the skill is the documentation.

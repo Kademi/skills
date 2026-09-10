@@ -1,6 +1,6 @@
 ---
 name: kademi-themes
-description: Use when working on a Kademi website, theme or Velocity template - website page bodies and the container, column and component tree they must follow, any .html file under a theme/ folder, the master, theme and page template chain, KEditor components that authors drag onto a page, theme LESS parameters and the site's custom stylesheet, navigation menus, content targeting, the dependencies.json that declares an app's browser assets, and front-end registration, login, one-time-password, survey and payment forms. Use when writing or debugging Velocity (#set, #if, #foreach, #macro, escaping), when a page shows "Couldnt parse template file", when a value renders as 4.0 or comes out empty, when a macro shows the previous row's data, when a component renders nothing or the editor flattens a page into one text block, when a section is missing for everyone or visible to everyone, when a CSS or JavaScript file is not loading, or when restyling a Kademi site.
+description: Use when working on a Kademi website, theme or Velocity template - page bodies and the container, column and component tree they follow, any .html file under a theme/ folder, the master, theme and page template chain, KEditor components authors drag onto a page, theme LESS parameters and custom stylesheets, navigation menus, content targeting, multi-language sites and translated page text, the dependencies.json declaring an app's browser assets, and front-end registration, login, one-time-password, survey and payment forms. Use when writing or debugging Velocity (#set, #if, #foreach, #macro, escaping), when a page shows "Couldnt parse template file", when a value renders as 4.0 or comes out empty, when a macro shows the previous row's data, when a component renders nothing or the editor flattens a page, when a section is missing for everyone or visible to everyone, when a page renders untranslated or in the wrong language, when a CSS or JavaScript file is not loading, or when restyling a Kademi site.
 license: Apache-2.0
 metadata:
   author: kademi
@@ -146,6 +146,31 @@ Read **[references/targeting.md](references/targeting.md)** before writing any o
 names are only half of it: the rules combine in a way the editor's own panel does not suggest, and
 they fail silently in two opposite directions.
 
+## Multi-language sites
+
+An organisation makes a set of languages available, each a code and a title, and every request
+resolves to one active language. Mark an element `trans-lookup` and its text is replaced with the
+stored translation for that language as the page renders:
+
+```html
+<span class="trans-lookup" data-transcode="page-size">Page size</span>
+```
+
+The active language is resolved in this order, first non-blank wins: a `selectedLangCode` **query
+parameter**, a `selectedLangCode` **cookie** (what the language switcher sets), the logged in
+**profile's** preference, the **website's default language**, then the browser's
+**`Accept-Language`** header matched against the configured languages. If all five are blank,
+nothing on the site translates at all.
+
+A whole page can be translated as a file instead: `about-fr.html` beside `about.html` is rendered
+in its place whenever `fr` is active, using the original page's template.
+
+Read **[references/translations.md](references/translations.md)** when a site serves more than one
+language, when text is not translating or is translating in the wrong language, or when you are
+marking up a template so its wording can be translated: it covers the resolution order in full,
+the `trans-lookup` attributes, the language switcher, per-language page files, translating record
+fields with `translationService`, strings built in browser JavaScript, and the AI translate pass.
+
 ## Velocity syntax as Kademi uses it
 
 ```velocity
@@ -190,6 +215,17 @@ These are the ones that cost the most time.
 - **An unresolved kcode removes the whole span it was in**, taking the label and layout around it
   with it, so the page looks like it lost a section. The span also needs `class="kcode"`, not just
   `data-kcode`, or it is never substituted at all.
+
+### Translations
+
+- **When no language resolves, nothing translates anywhere on the site.** No query parameter, no
+  cookie, no profile preference, no website default language and no matching `Accept-Language`
+  header leaves the active code null, and every page renders its source text with no error.
+- **`trans-lookup` on an element with child elements destroys them.** The lookup replaces the
+  element's whole text content, so it belongs on the leaf element holding the words.
+- **Marked-up text is only translated on a page that has at least one component.** The lookup runs
+  in the same render pass that expands components, and that pass exits early when no element on
+  the page carries `data-dynamic-href`.
 
 ### Styling
 

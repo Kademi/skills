@@ -202,6 +202,14 @@ have added a whole level to the tree - exactly the shape of
 where each hop is one registered field. For the administrator's view of the picker, see
 [Using KCode](https://docs.kademi.co/blogs/docs-kb/using-kcode/).
 
+### Checking what a field resolves to
+
+The Test KCode page, `/test-kcode/` on the admin domain and linked from the KCodes page under
+**Data & reports**, evaluates an expression against a real username, organisation, lead or sales
+record and shows the value alongside the log lines the expression wrote. Run a new field through it
+before telling anyone it works; a field that resolves to nothing there resolves to nothing in the
+journey.
+
 ## Evaluating KCode from your own code
 
 Custom node settings frequently hold a KCode template the administrator typed, for instance "which
