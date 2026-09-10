@@ -32,19 +32,10 @@ Two consequences shape all Kademi development:
 
 ## What was actually asked for
 
-People ask for outcomes. Kademi implements capabilities. The two do not share a vocabulary, and
-taking the words at face value is how you conclude something is impossible when it is only called
-something else.
-
-**Loyalty is the clearest case. On Kademi loyalty is a product of engagement - incentives,
-knowledge, content and communications - and is not a feature.** There is no loyalty app and no
-loyalty setting. Searching the installed apps or the Marketplace for "loyalty" finds nothing, and
-nothing is precisely the wrong answer, because the account very probably has everything needed to
-build one already.
-
-Engagement, advocacy, enablement, retention and "channel programme" are the same kind of word. They
-name a result somebody wants, not a thing to switch on. So decompose first, and choose what to
-build second:
+People ask for outcomes; Kademi implements capabilities. **Loyalty, engagement, advocacy, enablement,
+retention and "channel programme" name a result, not a feature** - there is no loyalty app and no
+loyalty setting, and a search for the word finds nothing on an account that already has everything
+needed to build one. Decompose first:
 
 | They asked for | Built from | Which on Kademi means |
 |---|---|---|
@@ -52,17 +43,9 @@ build second:
 | Enablement | Training, and the content that carries it | Training programs and the pages a module is made of |
 | A channel programme | Usually all of the above, with sales data behind it | Several of those, plus sales records and the claims submitted against them |
 
-Two rules follow.
-
 **Never conclude Kademi cannot do something because a search for the word returned nothing.** Search
-for the mechanism, not the outcome - "points", "rewards", "training", "journey" - and check what is
-already installed on the account for those. Most of what a request needs is usually there.
-
-**Say the decomposition back before you build on it.** "A loyalty programme here means points and
-rewards for the behaviour you want, training so they know the product, and communications that keep
-them coming back - is that the shape you had in mind?" is a better second message than a plan
-resting on a guess about what they meant. It also tells you how much is new code: often the answer
-is a small app filling one gap between capabilities that already exist.
+for the mechanism - "points", "rewards", "training", "journey" - and check what is already installed
+on the account. Most of a request is usually there, and the new code is a small app filling one gap.
 
 ## Anatomy of a repository app
 

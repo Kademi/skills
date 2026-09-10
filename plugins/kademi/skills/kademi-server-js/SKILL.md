@@ -45,32 +45,12 @@ ES2015, with no `engineVersion` attribute and no `.mjs`; the global is `queries`
 there is no draft version to try something on and the isolation that protects an app does not apply.
 Know that before you write into it, not after.
 
-### Write the scripts before the controllers.xml that names them
-
-`controllers.xml` is a list of files to load, and the app initialises the moment it is written. A
-controllers.xml naming a script that does not exist yet does not wait for it, and **the two engines
-fail differently**:
-
-- **GraalJS** refuses to initialise, every time, naming the app and the missing file.
-- **Nashorn logs one warning and carries on.** The line in the account log reads `Source file is
-  empty or missing: <path>`, without the app name. The app initialises, reports no init error, and
-  everything that file would have registered simply is not there - no route, no service, no
-  component, no listener.
-
-The Nashorn case is the dangerous one, because Nashorn is what you get when `engineVersion` is
-unset, and a mistyped source path looks exactly like a working app with a feature missing. If a
-registration is absent for no apparent reason, check the source paths in `controllers.xml` before
-anything else.
-
-Either way it is not a broken app, it is an app you have not finished writing. Sync the scripts
-first, then the controllers.xml that declares them.
-
-### A disabled app keeps all its code and registers none of it
-
-Every file in a disabled app is still there and still readable, and nothing it registers exists: no
-route, no component, no query table, no listener. When source and runtime disagree, the runtime is
-right. Code from a disabled app is also the code least worth copying, because nothing has kept it
-correct.
+**Two traps that look like bugs and are not.** A `controllers.xml` naming a script that does not exist
+yet does not wait for it: GraalJS fails to initialise naming the file, but Nashorn, the default engine,
+skips it with only a warning in the account log and the app comes up with everything that file would
+have registered silently absent - so when a registration is missing for no reason, check the source
+paths first. And a disabled app keeps every file while registering nothing; when source and runtime
+disagree, the runtime is right.
 
 Read [references/surfaces.md](references/surfaces.md) when you are deciding where a piece of code
 belongs, creating a repository or choosing its kind, working in a website's `/WEB-INF/`, or writing
@@ -421,20 +401,12 @@ machine-called endpoint needs), and brute-force protection.
 
 ## When it fails on a live account
 
-**Did the app load at all?** Ask that first after any change to a script or to `controllers.xml`.
-Scripts are parsed and registrations run when the app initialises, and if that fails the app does
-not half work: it does not load, and everything it registers silently disappears. The symptom then
-turns up somewhere else entirely - a menu item gone, a page 404ing, a component missing from the
-picker - and people debug that for an hour. The platform records what happened, per repository. In
-the admin console, open **Websites & apps > Apps**, find the app and open its initialisation
-details: init error, init date and init logs. The Dev tools page at `/dev-tools` on the admin domain,
-linked from the Developer hub, shows the same for any repository you pick. There is no file for this,
-and nothing to sync.
-Read the init error before anything else - it usually names the file and the line.
-
-An app that initialises is not an app that works. Initialising means the registrations ran, not
-that the code they registered does anything. Anything called later - a query table loader, an event
-listener, a scheduled job - has to be run before you can say you checked it.
+**Did the app load at all?** Ask that first after any change to a script or to `controllers.xml`. An
+app that fails to initialise does not half work; everything it registers disappears at once and the
+symptom turns up somewhere else. The init error, init date and init logs are on the app's row at
+**Websites & apps > Apps** in the admin console, and initialising is not the same as working: anything
+called later still has to be run. The procedure is
+[kademi-coding-standards/references/verification.md](../kademi-coding-standards/references/verification.md).
 
 For a failure at request time the response tells you almost nothing: an uncaught exception becomes a
 500 error page with the status code and no message. Reach for a **debug session** - started from

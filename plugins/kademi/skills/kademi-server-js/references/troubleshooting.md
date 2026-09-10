@@ -6,21 +6,11 @@ your own account.
 
 ## Start with the init error
 
-Before anything else, after any change to a script or to `controllers.xml`: did the app load? Its
-scripts are parsed and its registrations run when it initialises, and if that fails the app does not
-half work - it does not load, and everything it registers disappears at once. The symptom is then a
-mysterious absence somewhere else: a menu item gone, a page 404ing, a component missing from the
-picker, `services.thatService` undefined.
-
-**In the admin console**, open **Websites & apps > Apps**, find the app and open its initialisation
-details: the init error, the date it last initialised, and its init logs. The Dev tools page at
-`/dev-tools` on the admin domain, linked from the Developer hub, shows the same for any repository. There is no
-file for any of this and nothing to sync. The init error usually names the file and the line, and it
-is the difference between a minute and an hour.
-
-Initialising is not working. It means the registrations ran, not that the code they registered does
-anything - anything called later, a query table loader, an event listener, a scheduled job, still
-has to be run before you can say you checked it.
+After any change to a script or to `controllers.xml`, check the app loaded before reading anything
+below: the init error, init date and init logs are on the app's row at **Websites & apps > Apps** in
+the admin console. An app that failed to initialise has lost every registration at once, and the
+symptom appears somewhere else entirely. The full check, including whether each registration is live,
+is [kademi-coding-standards/references/verification.md](../../kademi-coding-standards/references/verification.md).
 
 ## Where an exception surfaces
 

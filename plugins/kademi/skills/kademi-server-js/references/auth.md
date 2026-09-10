@@ -40,10 +40,16 @@ every request.
 ## CSRF protection
 
 Cross-site request forgery works because a form on the attacker's site submits to yours while the
-victim is still logged in. The defence is a token injected into every form and validated on
-submit.
+victim is still logged in. Two defences run, and neither is in your app.
 
-This is configured as an IDP policy rule, not in your app. The rule below rejects any POST that
+**The floor is the platform's origin check.** On every state-changing request, on both the admin
+and website domains, the platform compares the browser's `Origin` and `Sec-Fetch-Site` headers
+against the site before the handler runs, and refuses a cross-site request from a cookie session. It
+needs nothing from your code. An endpoint that must accept cross-site POSTs - a webhook, a
+machine-called API - opts out with `dynamicIdpPaths().type('excludeCsrf')`, below.
+
+**The token is defence in depth for website XHR.** It is a header, so it only ever covers
+JavaScript-made requests, and it is configured as an IDP policy rule, not in your app. The rule below rejects any POST that
 does not carry a valid CSRF token, unless its path is registered as CSRF-exempt.
 
 ```xml

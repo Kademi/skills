@@ -95,14 +95,13 @@ Native JS arithmetic on a Java `BigDecimal` silently converts to a float.
 Two facts decide most of what "done" means here, and both say the same thing: the source file is not
 the evidence.
 
-- **A `controllers.xml` that names a script file which does not exist does not wait for it.** On
-  Nashorn, the default engine, the file is skipped with one warning in the account log and the app
-  initialises with everything that file would have registered silently absent; on GraalJS the app
-  fails to initialise, naming the file. Either way it is an unfinished app, not a broken one. Write
-  the scripts before the `controllers.xml` entry that declares them.
-- **A disabled app keeps its whole repository and registers nothing.** Every file is present and
-  syncs normally while nothing in it is in effect. The runtime says what is registered; the
-  repository does not.
+- **A `controllers.xml` naming a script that does not exist is not waited for.** Nashorn skips it with
+  only a log warning and the app comes up with that file's registrations silently absent.
+- **A disabled app keeps its whole repository and registers nothing.** The runtime says what is
+  registered; the repository does not.
+
+Both in full, with the engine difference, in
+[kademi-server-js/references/surfaces.md](../kademi-server-js/references/surfaces.md).
 
 So the last step of a change is not "the files are on the server", it is "the app initialised, the
 registration is listed, and I ran the thing". [references/verification.md](references/verification.md)

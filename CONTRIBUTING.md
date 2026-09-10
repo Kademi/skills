@@ -71,7 +71,9 @@ with `"mcpServers": "./.mcp.json"`.
 ## Writing a skill
 
 Skills are Markdown only - no scripts, nothing platform-specific. Keep each `SKILL.md` under 500
-lines and move depth into `references/`. Validate with
+lines and move depth into `references/`. The `description` is an unquoted YAML scalar, so it cannot
+contain a colon followed by a space - write a dash instead - and it must stay under 1024 characters.
+Validate with
 [`skills-ref`](https://github.com/agentskills/agentskills/tree/main/skills-ref):
 
 ```

@@ -9,8 +9,9 @@ thing as a credential that is "only in the dev copy".
 
 ## Where they go instead
 
-Two account-level stores, both edited in the admin console under
-**Account settings > Environment variables**, and both reachable from any value that supports
+Two account-level stores, both edited on one admin console page, `/account-settings/env-vars/` on the
+admin domain - it has no menu entry of its own and is linked from the Configurations page and the
+Developer hub - and both reachable from any value that supports
 `${...}` substitution:
 
 | Store | Placeholder | For |

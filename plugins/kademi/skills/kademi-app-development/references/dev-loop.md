@@ -79,6 +79,10 @@ ksync.sh -command sync
   run `pull` explicitly.
 - **`push` fails if the server has changed** since your last pull. That is deliberate - run
   `pull`, resolve, then `push`.
+- **A change lands on the version you checked out, which may not be the one the account is
+  running.** Your edit is then real and invisible. When a synced change has no effect, compare the
+  branch in your KSync config with the version shown against the app at **Websites & apps > Apps**
+  before debugging the code.
 - **A version folder must contain exactly one version.** More than one and publishing fails.
 - **Never republish a version that already exists.** Bump the version instead. `-force` exists
   for recovery, not for routine use.

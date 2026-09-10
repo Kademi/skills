@@ -83,8 +83,8 @@ Some things are supposed to differ between environments, and moving them breaks 
 
 The fix for the first of those is not to keep catching it in diffs. Put the value in an environment
 variable and reference it, so the same configuration is correct in both places; environment
-variables and secrets are the `kademi-security` skill's subject, and they live in the admin console
-at **Account settings > Environment variables**.
+variables and secrets are the `kademi-security` skill's subject, and they live on the Environment
+variables page, `/account-settings/env-vars/` on the admin domain, linked from the Configurations page.
 
 Where an item genuinely should never travel, add it to the account's ignore list. An ignore entry
 names an app, optionally a config item type and optionally a single item, and matching items are
