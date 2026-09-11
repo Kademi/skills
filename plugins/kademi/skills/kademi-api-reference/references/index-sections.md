@@ -81,8 +81,8 @@ one as an HTML form control.
 ### Database Entities
 The persisted records: the field-by-field reference for a Lead, a Cart, a Quote, an EmailItem, a
 Blog. Go here for "what properties does this record have", "what is nullable", "what does this
-status mean". Note that a few very common types (Profile, Organisation, Group) have no page.
-`Lead`, `Cart`, `Quote`, `EmailItem`, `GroupMembership`, `Website`
+status mean".
+`Profile`, `Organisation`, `Lead`, `Cart`, `Quote`, `EmailItem`, `GroupMembership`, `Website`
 
 ### Database Table Providers
 Import-pipeline table providers: the components that insert, update or delete rows of one entity

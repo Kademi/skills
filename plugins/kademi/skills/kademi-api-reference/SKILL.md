@@ -117,10 +117,11 @@ Things to actually use when you read it:
   form. If a name is missing from the Properties table, check the Methods list before concluding
   it is absent.
 - **A linked type has its own page; a backticked type does not.** `[FunnelRepository](FunnelRepository.md)`
-  is documented, `` `Organisation` `` is not. Inside generics the link is nested:
+  is documented, `` `Credential` `` is not. Inside generics the link is nested:
   `List<[LeadParticipant](LeadParticipant.md)>`, `Map<String,[Role](Role.md)>`. A fully plain
-  generic like `` `List<Organisation>` `` means the element type is undocumented. Use this as a
-  fast test for whether it is worth fetching the next page.
+  generic like `` `List<Credential>` `` means the element type is undocumented. Use this as a
+  fast test for whether it is worth fetching the next page, and trust it over guessing name
+  variants.
 - **Overloads are separate headings.** Match the one whose parameter list you can actually supply.
   `checkValidPassword(String, Profile)` and `checkValidPassword(String, Profile, Narrative)` are
   two entries.
@@ -138,10 +139,10 @@ The index states its own scope on line 3: *"Reference for classes annotated with
 It is a curated surface for app developers, not a full javadoc dump. The following are
 deliberately absent, and their absence is not evidence that the underlying thing does not exist.
 
-- **Undocumented classes.** Some very common types have no page at all - as of writing,
-  `Profile`, `Organisation`, `Group` and `Branch` are among them, even though they appear
-  constantly as parameter and return types. All four 404, and none of them is in the index.
-  This is the gap you will hit first; the recovery is the next subsection.
+- **Undocumented classes.** A type can appear as a parameter or return type on a documented page
+  and have no page of its own - `Credential`, `HostMapping` and `PurchaseOrder` are examples. The
+  linked-versus-backticked test above tells you which before you fetch; the recovery is the next
+  subsection.
 - **Static methods.** Entity pages carry instance members only. `Lead`'s own description
   mentions `Lead.create`, and there is no `create` entry on the page.
 - **Overloads that take a persistence `Session`.** The internal Hibernate-session variants of
@@ -159,10 +160,10 @@ deliberately absent, and their absence is not evidence that the underlying thing
 In order:
 
 1. **Search the index for near names before giving up.** The bean, the builder or the manager
-   that wraps it is usually documented even when the entity is not. For `Profile`: no page, but
-   `ProfileBean`, `ProfileBuilder`, `ProfileAndField`, `ProfileIdentifier` and `ProfileTab` all
-   have pages, and `UserManager` documents the parameters and return types of nearly every
-   profile operation you would want.
+   that wraps it is usually documented even when the type itself is not, and a family of related
+   pages often covers the same ground - alongside `Profile` sit `ProfileBean`, `ProfileBuilder`,
+   `ProfileAndField`, `ProfileIdentifier` and `ProfileTab`, and `UserManager` documents the
+   parameters and return types of nearly every profile operation you would want.
 2. **Work from the documented caller.** If a manager method takes or returns an undocumented
    type, its parameter and return descriptions on the manager page tell you what that value is
    and what may be null. That is often the whole answer.
@@ -199,7 +200,7 @@ produces. Note also that the builder's own description says it is obtained from
 Read **[references/worked-lookups.md](references/worked-lookups.md)** when your question is a
 different shape: reading an entity page and walking its `Extends:` chain (`Lead`, `Quote`),
 resolving an unfamiliar `services.*` name back to its class, or working around a type that is
-not in the reference at all (`Profile`).
+not in the reference at all (`Credential`).
 
 ## Rules
 

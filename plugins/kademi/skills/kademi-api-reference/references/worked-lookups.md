@@ -41,15 +41,18 @@ wrongly conclude that half the query API does not exist.
 
 ## 3. "It is not in the reference"
 
-You want the display name of a profile and reach for `Profile.md`. It 404s - an HTML error page
-titled `404 | Error page`.
+A manager method hands you a `Credential` and you reach for `Credential.md`. It 404s - an HTML
+error page titled `404 | Error page`, not a Markdown 404.
 
-Do not retry `Profiles.md`, `ProfileEntity.md`, `User.md`. Search the index for `Profile`: no
-`Profile` entry, but `ProfileBean`, `ProfileBuilder` and `ProfileAndField` are all there, and
-`UserManager` is the documented owner of profile operations. `UserManager.md` gives you
-`currentProfile` (returns `Profile`, "or null when the request is anonymous") plus a documented
-method for nearly everything you would want to do with it.
+Do not retry `Credentials.md`, `UserCredential.md`, `Login.md`. Guessing name variants is the
+wrong move: the linked-versus-backticked test on the page you came from already told you there
+was no page, because the type was written in backticks rather than as a link.
 
-So: the *operations* are verified even though the *type* is not. Use the manager's documented
-signature, and if you still need a bare property on the returned `Profile` object, flag it as
-unverified rather than asserting it exists.
+Search the index for near names instead, then work from the documented caller. The manager method
+that returned the value documents what it is and when it is null, and that is usually the whole
+answer. Credentials are a case where the absence is deliberate - the reference documents password
+*operations* such as `setPassword` and `verifyPassword` but never a type that hands back a stored
+hash - so the operations are verified even though the type is not.
+
+Use the manager's documented signature. If you still need a bare property on the returned object,
+flag it as unverified rather than asserting it exists.
