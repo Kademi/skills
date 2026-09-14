@@ -108,3 +108,26 @@ The one phrase is deliberate. "The admin", "the admin UI" and "the admin console
 to mean the same place; the repo now says *the admin console* everywhere, and "admin domain" only
 when the point is which hostname serves a file.
 
+
+## Changing a description
+
+A description is the only thing that decides whether a skill is ever loaded, so treat a change to
+one as a measured change, not a wording preference.
+
+1. Run the corpus before you edit. Run it from a throwaway directory - the agent runs it spawns
+   can write to whatever directory they start in - so give both paths absolutely:
+   `python3 /path/to/skills/scripts/trigger-evals.py /path/to/skills/evals/trigger-corpus.json train 3`
+2. Edit, guided only by which train queries failed.
+3. Re-run train, then run `validation` to choose between candidates. Select on validation, not on
+   train and not on recency - a later iteration is often worse.
+4. If you broadened a description, add a near-miss negative that should still not fire.
+5. Append the result to `evals/trigger-runs.json`, recording the model.
+
+Read the warnings at the top of the script first. It spawns real agent runs that can write to
+disk, `--allowedTools` does not prevent that, and the model must be Opus - the same descriptions
+score very differently on Fable.
+
+Known result as of c5cc877: Opus reaches for a skill only when a query is unmistakably
+Kademi-specific. Negatives pass 7/7 and nothing mis-routes, but generic phrasing does not fire
+however the description is worded. Description tuning is a weak lever there; one full
+optimisation round produced no gain on train and a regression on validation.

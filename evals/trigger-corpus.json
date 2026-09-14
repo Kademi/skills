@@ -1,0 +1,359 @@
+{
+ "about": "Trigger-rate eval corpus for the Kademi skills. Each query names the one skill that should fire; should_trigger false means no Kademi skill should fire. Split 60/40 into train and validation - use train to guide a description change, validation only to choose between candidates. Run it with scripts/trigger-evals.md.",
+ "scoring": "Three runs per query. A positive passes above a 0.5 trigger rate, a negative at or below.",
+ "coverage_gaps": "kademi-rewards, kademi-commerce and kademi-coding-standards have one positive each and none in validation; kademi-ai and kademi-api-reference have two. Add two or three positives each before tuning those descriptions. kademi-ksync was added after the two recorded runs, so neither run covers it.",
+ "train": [
+  {
+   "query": "connect claude desktop to our kademi account over mcp",
+   "skill": "kademi-ai",
+   "should_trigger": true
+  },
+  {
+   "query": "rate limit my nginx server",
+   "skill": "kademi-security",
+   "should_trigger": false
+  },
+  {
+   "query": "set up ksync and pull the site down locally",
+   "skill": "kademi-ksync",
+   "should_trigger": true
+  },
+  {
+   "query": "promote config from our dev account to production",
+   "skill": "kademi-app-development",
+   "should_trigger": true
+  },
+  {
+   "query": "add a buy one get one free rule to checkout",
+   "skill": "kademi-commerce",
+   "should_trigger": true
+  },
+  {
+   "query": "how do i get started building a kademi app",
+   "skill": "kademi-app-development",
+   "should_trigger": true
+  },
+  {
+   "query": "how do i let authors configure my component from the settings panel",
+   "skill": "kademi-themes",
+   "should_trigger": true
+  },
+  {
+   "query": "my privilege check keeps returning 403 even though the role is granted",
+   "skill": "kademi-server-js",
+   "should_trigger": true
+  },
+  {
+   "query": "expose a service from my app that another app can call",
+   "skill": "kademi-server-js",
+   "should_trigger": true
+  },
+  {
+   "query": "our partner portal homepage needs a hero and three stat tiles",
+   "skill": "kademi-websites",
+   "should_trigger": true
+  },
+  {
+   "query": "give this website a fresh summery look, brighter and warmer",
+   "skill": "kademi-websites",
+   "should_trigger": true
+  },
+  {
+   "query": "added myapp.css but its not loading on the site",
+   "skill": "kademi-themes",
+   "should_trigger": true
+  },
+  {
+   "query": "write a custom points allocation source for sales records",
+   "skill": "kademi-rewards",
+   "should_trigger": true
+  },
+  {
+   "query": "hide the pricing block from logged out visitors",
+   "skill": "kademi-websites",
+   "should_trigger": true
+  },
+  {
+   "query": "my admin table's pagination is broken after a reload",
+   "skill": "kademi-admin-ui",
+   "should_trigger": true
+  },
+  {
+   "query": "i want my app to react when someone completes a training module",
+   "skill": "kademi-journeys",
+   "should_trigger": true
+  },
+  {
+   "query": "whats the best way to do map reduce on kademi",
+   "skill": "kademi-integrations",
+   "should_trigger": true
+  },
+  {
+   "query": "my velocity macro keeps showing the previous row's value",
+   "skill": "kademi-themes",
+   "should_trigger": true
+  },
+  {
+   "query": "build an admin dashboard in django",
+   "skill": "kademi-admin-ui",
+   "should_trigger": false
+  },
+  {
+   "query": "our client wants the site in spanish as well as english",
+   "skill": "kademi-websites",
+   "should_trigger": true
+  },
+  {
+   "query": "is this the right way to do it on kademi, can you review my app",
+   "skill": "kademi-coding-standards",
+   "should_trigger": true
+  },
+  {
+   "query": "site is getting scraped, rate limit the login form",
+   "skill": "kademi-security",
+   "should_trigger": true
+  },
+  {
+   "query": "writing a keditor component so authors can drag a testimonial block onto a page",
+   "skill": "kademi-themes",
+   "should_trigger": true
+  },
+  {
+   "query": "restyle my wordpress site to look more summery",
+   "skill": "kademi-websites",
+   "should_trigger": false
+  },
+  {
+   "query": "nightly sftp feed of order lines is timing out",
+   "skill": "kademi-integrations",
+   "should_trigger": true
+  },
+  {
+   "query": "the confirm dialog throws logStr is not defined",
+   "skill": "kademi-admin-ui",
+   "should_trigger": true
+  },
+  {
+   "query": "my express route returns 404",
+   "skill": "kademi-server-js",
+   "should_trigger": false
+  },
+  {
+   "query": "how do i publish a new version to the marketplace",
+   "skill": "kademi-app-development",
+   "should_trigger": true
+  },
+  {
+   "query": "i opened the page in the editor and it squashed everything into one text block at the bottom",
+   "skill": "kademi-websites",
+   "should_trigger": true
+  },
+  {
+   "query": "write a velocity template for a spring boot app",
+   "skill": "kademi-themes",
+   "should_trigger": false
+  },
+  {
+   "query": "my #foreach loop is printing the same value every iteration",
+   "skill": "kademi-themes",
+   "should_trigger": true
+  },
+  {
+   "query": "make this react component accessible",
+   "skill": "kademi-admin-ui",
+   "should_trigger": false
+  },
+  {
+   "query": "my admin page javascript stopped working after i reloaded a fragment",
+   "skill": "kademi-admin-ui",
+   "should_trigger": true
+  },
+  {
+   "query": "import a csv into postgres with python",
+   "skill": "kademi-integrations",
+   "should_trigger": false
+  },
+  {
+   "query": "make the dealer portal look less corporate, warmer and more modern",
+   "skill": "kademi-websites",
+   "should_trigger": true
+  },
+  {
+   "query": "what does services.userManager.findProfile actually return",
+   "skill": "kademi-api-reference",
+   "should_trigger": true
+  },
+  {
+   "query": "getting TypeError: setDisplayName is not a function in APP-INF/app.js",
+   "skill": "kademi-server-js",
+   "should_trigger": true
+  },
+  {
+   "query": "build a custom registration form with an org lookup",
+   "skill": "kademi-themes",
+   "should_trigger": true
+  },
+  {
+   "query": "my edits arent showing up on the site even though sync says its running",
+   "skill": "kademi-ksync",
+   "should_trigger": true
+  },
+  {
+   "query": "push keeps saying the remote repository has changed",
+   "skill": "kademi-ksync",
+   "should_trigger": true
+  },
+  {
+   "query": "how do i get the dealer portal onto my laptop so i can work on it",
+   "skill": "kademi-ksync",
+   "should_trigger": true
+  },
+  {
+   "query": "git pull origin main then rebase onto develop",
+   "skill": "kademi-ksync",
+   "should_trigger": false
+  }
+ ],
+ "validation": [
+  {
+   "query": "route returns 404 but the controller is registered in controllers.xml",
+   "skill": "kademi-server-js",
+   "should_trigger": true
+  },
+  {
+   "query": "this section should only show to people in the Gold Partners group",
+   "skill": "kademi-websites",
+   "should_trigger": true
+  },
+  {
+   "query": "whats the difference between an app a lib and a theme in kademi",
+   "skill": "kademi-app-development",
+   "should_trigger": true
+  },
+  {
+   "query": "what does Array.prototype.flatMap return",
+   "skill": "kademi-api-reference",
+   "should_trigger": false
+  },
+  {
+   "query": "need a job to run every night at 2am, no pipeline",
+   "skill": "kademi-integrations",
+   "should_trigger": true
+  },
+  {
+   "query": "build an admin screen listing all dealers with a search box",
+   "skill": "kademi-admin-ui",
+   "should_trigger": true
+  },
+  {
+   "query": "a number is rendering as 4.0 instead of 4 in the template",
+   "skill": "kademi-themes",
+   "should_trigger": true
+  },
+  {
+   "query": "add a panel to the profile page in the admin showing their claims",
+   "skill": "kademi-admin-ui",
+   "should_trigger": true
+  },
+  {
+   "query": "add a product to my shopify store",
+   "skill": "kademi-commerce",
+   "should_trigger": false
+  },
+  {
+   "query": "set up a customer journey map in figma",
+   "skill": "kademi-journeys",
+   "should_trigger": false
+  },
+  {
+   "query": "i ksynced the site down but theres no css anywhere, where do the colours come from",
+   "skill": "kademi-websites",
+   "should_trigger": true
+  },
+  {
+   "query": "is there a manager method for sending a templated email in kademi",
+   "skill": "kademi-api-reference",
+   "should_trigger": true
+  },
+  {
+   "query": "need to run a long import in the background and show progress",
+   "skill": "kademi-server-js",
+   "should_trigger": true
+  },
+  {
+   "query": "expose a tool so the kademi assistant can look up a dealer's points",
+   "skill": "kademi-ai",
+   "should_trigger": true
+  },
+  {
+   "query": "my POST handler just re-renders the page and nothing happens",
+   "skill": "kademi-server-js",
+   "should_trigger": true
+  },
+  {
+   "query": "the french version of the about page is showing english text",
+   "skill": "kademi-websites",
+   "should_trigger": true
+  },
+  {
+   "query": "the whole site suddenly looks unstyled after my last sync",
+   "skill": "kademi-websites",
+   "should_trigger": true
+  },
+  {
+   "query": "add the new Rewards page to the top nav",
+   "skill": "kademi-websites",
+   "should_trigger": true
+  },
+  {
+   "query": "import 200k profiles from a csv every night",
+   "skill": "kademi-integrations",
+   "should_trigger": true
+  },
+  {
+   "query": "add a custom goal node so a journey can wait for a claim to be approved",
+   "skill": "kademi-journeys",
+   "should_trigger": true
+  },
+  {
+   "query": "make the hero section on my nextjs landing page warmer",
+   "skill": "kademi-websites",
+   "should_trigger": false
+  },
+  {
+   "query": "change the brand colour across the whole site to #ff8a3d",
+   "skill": "kademi-websites",
+   "should_trigger": true
+  },
+  {
+   "query": "page is throwing Couldnt parse template file: /theme/foo.html",
+   "skill": "kademi-themes",
+   "should_trigger": true
+  },
+  {
+   "query": "how do i publish an npm package",
+   "skill": "kademi-app-development",
+   "should_trigger": false
+  },
+  {
+   "query": "store an api key for a third party service in my kademi app",
+   "skill": "kademi-security",
+   "should_trigger": true
+  },
+  {
+   "query": "one of my files never uploads, the rest of the folder syncs fine",
+   "skill": "kademi-ksync",
+   "should_trigger": true
+  },
+  {
+   "query": "run the sync from our github actions build without a browser login",
+   "skill": "kademi-ksync",
+   "should_trigger": true
+  },
+  {
+   "query": "checkout says it is not a repository branch, it answered with a page",
+   "skill": "kademi-ksync",
+   "should_trigger": true
+  }
+ ]
+}
