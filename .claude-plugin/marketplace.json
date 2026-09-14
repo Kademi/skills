@@ -6,7 +6,7 @@
     "url": "https://kademi.co"
   },
   "description": "Plugins for building on the Kademi platform",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "plugins": [
     {
       "name": "kademi",
