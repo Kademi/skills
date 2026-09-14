@@ -150,12 +150,10 @@ ksync3 push    # send local changes
 
 Two things about `sync` that are not obvious until they bite:
 
-- **One ksync3 at a time per branch.** The hash cache is a BerkeleyDB environment under `/tmp`,
-  locked single-writer and keyed by the branch url - or by the repository url when the checkout is
-  following one, so two checkouts that follow the same repository collide even on different
-  versions. Run `pull` while `sync` is going and it dies
-  with `EnvironmentLockedException ... je.lck`, which does not mention `sync` at all. Stop `sync`
-  first. Two checkouts of the same branch on one machine collide the same way.
+- **One ksync3 at a time.** The hash cache is locked single-writer, so running `pull` or `push`
+  while `sync` is going stops with *"Another ksync3 is already working on ..."*. Stop `sync` first.
+  The lock covers the repository, not just the version, so a `sync` in one checkout blocks a second
+  checkout of the same repository even on a different version.
 - **Never let anything write inside the checkout while `sync` runs.** It syncs whatever appears
   there, your build output and your log files included - and if the writer is the sync process
   itself, say a log you redirected into the folder, each push grows the log, which triggers
@@ -251,8 +249,7 @@ read, quote or copy it. Checkouts predating that change still carry a `userUrlHa
 | `<url> no longer answers as a repository` | A followed repository has gone or been renamed | Point `--url` at a version to pin the checkout |
 | A saved change has no effect on the site | Very often the edit landed on a version the account is not running | Compare `url` in `.ksync/ksync.properties` with the version shown against the app at **Websites & apps > Apps** before debugging any code |
 | `Remote repository has changed` when nobody else is working, and it comes and goes between runs | The account is answering with two different branch heads between requests | Retry; if it keeps alternating, report it. **Do not reach for `--localwins`** - against whichever head is stale it overwrites the good one with an older tree |
-| `pull` fails with a `NullPointerException` | A defect in current ksync3 releases, not anything wrong with your checkout | There is no flag around it - take the changes with a fresh `checkout` into an empty directory, and report the version you are on |
-| `EnvironmentLockedException`, `je.lck could not be locked` | Another ksync3 is already working on this branch, usually a `sync` you left running | Stop the other one; they cannot share a checkout |
+| `Another ksync3 is already working on <url>` | Exactly that, usually a `sync` left running in another terminal | Stop the other one. Two checkouts of the same repository share the cache, so a `sync` in either blocks the other |
 | `sync` is running, saves are happening, nothing reaches the account | It went `BLOCKED` earlier and is refusing every push since | Check `problem` in `.ksync/status.json`; stop `sync`, pull, restart it |
 | `sync` pushes over and over with no edits from you | Something inside the checkout is being written - often a log or build output, and if it is the sync log the pushes feed themselves | Move it outside the checkout or add it to `.ksyncignore` |
 | A file never appears on the account | An ignore rule | `ksync3 check-ignore <path>` |
