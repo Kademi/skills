@@ -15,7 +15,7 @@ This is the part that surprises people. You do **not** make a version folder loc
 a repository on the account, and you check out or sync against one specific version:
 
 ```
-https://myaccount.admin.kademi.com/repositories/<app>/<version>
+https://acme.admin.kademi.us/repositories/<app>/<version>
 ```
 
 So your local working tree is the *contents* of one version. Keep it in git as normal.
@@ -45,20 +45,19 @@ You never edit a version that is already published. Duplicate, increment, sync, 
    - **New app** - save, then **Add to marketplace**
    - **Existing app** - **Republish**
 
-## The `ksync -command publish` alternative
+## The `ksync3 publish` alternative
 
 KSync also has a `publish` command that pushes many apps at once from a local tree laid out as
-`<rootdir>/{apps,libs,themes}/<app-id>/<version>/`. That is a bulk path for maintaining a whole
-set of apps; the admin-UI flow above is the normal one for a single app.
+`{apps,libs,themes}/<app-id>/<version>/`. That is a bulk path for maintaining a whole set of apps;
+the admin-UI flow above is the normal one for a single app.
 
-Always dry-run it first:
+Run it from the folder holding those three directories, and dry-run it first:
 
 ```bash
-ksync.sh -command publish -rootdir . -appids '*' \
-  -url https://myaccount.admin.kademi.com -user myusername -report
+ksync3 publish --appids '*' --url https://acme.admin.kademi.us --report
 ```
 
-See [dev-loop.md](dev-loop.md) for the full option list.
+The `kademi-ksync` skill has the full option list.
 
 ## Version rules
 

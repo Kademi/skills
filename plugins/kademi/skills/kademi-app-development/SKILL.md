@@ -1,6 +1,6 @@
 ---
 name: kademi-app-development
-description: Use when someone is getting started with Kademi, or is working on a Kademi app as a package rather than on the code inside it. Covers what Kademi is and its account, organisation, website and profile model; how a repository app is laid out; whether the work belongs in a website, an app, a lib or a theme; setting up KSync and syncing to a hosted account; and creating versions and publishing to the Marketplace, plus promoting configuration between a development account and production with snapshots and diffs. Use on first contact with Kademi, including someone who only wants to build or restyle a website on it, when someone asks what a Kademi term means, how a Kademi app is structured, or how to set up, sync, version, deploy or publish one - including when they do not name Kademi but are clearly working in a Kademi repository. For writing the code inside an app, this skill names the specialist skill to use instead.
+description: Use when someone is getting started with Kademi, or is working on a Kademi app as a package rather than on the code inside it. Covers what Kademi is and its account, organisation, website and profile model; how a repository app is laid out; whether the work belongs in a website, an app, a lib or a theme; and creating versions and publishing to the Marketplace, plus promoting configuration between a development account and production with snapshots and diffs. Use on first contact with Kademi, including someone who only wants to build or restyle a website on it, when someone asks what a Kademi term means, how a Kademi app is structured, or how to version, deploy or publish one - including when they do not name Kademi but are clearly working in a Kademi repository. For writing the code inside an app, this skill names the specialist skill to use instead.
 license: Apache-2.0
 metadata:
   author: kademi
@@ -178,15 +178,15 @@ There is no local Kademi server - you develop locally against a real Kademi acco
 `sync` running while you work:
 
 ```bash
-java -jar ksync3.jar -command checkout -url <repo-url> -user <username>
-java -jar ksync3.jar -command sync
+ksync3 checkout --url https://acme.admin.kademi.us/repositories/myapp
+ksync3 sync
 ```
 
-`sync` is push-only and never modifies local files; take server-side changes with `pull`.
-Publishing to the Marketplace is a separate `publish` command.
+`sync` and `push` only go one way; take server-side changes with `pull`, which is the only command
+that rewrites local files.
 
-Read [references/dev-loop.md](references/dev-loop.md) when you are setting KSync up for the first
-time, when you need a command or an option, or when a checkout, sync or pull is not behaving.
+The `kademi-ksync` skill is the one for KSync itself - installing it, signing in, the checkout url,
+every command and option, running it unattended, and working out why something is not syncing.
 
 ## Versions, deploying and the Marketplace
 
@@ -242,9 +242,10 @@ making your own app's entities promotable.
 | Turning sales records into points - points allocation sources, custom points rule types, expiry, record matching, vouchers | `kademi-rewards` |
 | Stores, products, carts and checkout - checkout rules, payment providers, promotion mechanics | `kademi-commerce` |
 | Credentials, secrets, request input, authorisation checks, anything security-sensitive | `kademi-security` |
+| Installing, signing in to or running KSync, and any checkout, sync, push, pull or ignore problem | `kademi-ksync` |
 | The house coding standards, and the review to run before handing work back | `kademi-coding-standards` |
 
-That is all twelve specialist skills. If a task fits one of them, hand it over rather than guessing
+That is all thirteen specialist skills. If a task fits one of them, hand it over rather than guessing
 from this skill. `kademi-coding-standards` is not an alternative to the others - run its review over
 your changes whatever else you used.
 

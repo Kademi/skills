@@ -12,6 +12,7 @@ skills teach an agent how to build them.
 | Skill | Covers |
 |---|---|
 | [`kademi-app-development`](plugins/kademi/skills/kademi-app-development) | Start here. What an app is, how it is laid out, the development loop, and which skill to use next |
+| [`kademi-ksync`](plugins/kademi/skills/kademi-ksync) | KSync - checkout, sync, push, pull, ignore rules, publishing, and why a file will not sync |
 | [`kademi-api-reference`](plugins/kademi/skills/kademi-api-reference) | Looking up platform classes, services and methods in the public API reference |
 | [`kademi-server-js`](plugins/kademi/skills/kademi-server-js) | Server-side JavaScript under `APP-INF/`, `controllers.xml`, routes, services, queries |
 | [`kademi-admin-ui`](plugins/kademi/skills/kademi-admin-ui) | Admin pages, portlets, client-side JS and CSS, UX conventions |

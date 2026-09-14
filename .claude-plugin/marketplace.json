@@ -6,13 +6,13 @@
     "url": "https://kademi.co"
   },
   "description": "Plugins for building on the Kademi platform",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "plugins": [
     {
       "name": "kademi",
       "displayName": "Kademi",
       "source": "./plugins/kademi",
-      "description": "Skills for building on the Kademi platform: repository apps, server-side JavaScript, admin UI, websites and Velocity themes, integrations, journeys, rewards, commerce, security and AI features",
+      "description": "Skills for building on the Kademi platform: repository apps, the KSync command line, server-side JavaScript, admin UI, websites and Velocity themes, integrations, journeys, rewards, commerce, security and AI features",
       "author": {
         "name": "Kademi",
         "url": "https://kademi.co"

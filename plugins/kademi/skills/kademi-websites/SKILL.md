@@ -277,7 +277,8 @@ These are the ones that cost the most time.
   front-end registration, login and payment forms.
 - **kademi-server-js** - when a page needs data or behaviour no installed app provides: the
   controller behind a page, or what a website can register through its own `WEB-INF/controllers.xml`.
-- **kademi-app-development** - the checkout itself: KSync, versions, what a website is relative to an
-  app, lib or theme, and syncing your changes to the account.
+- **kademi-app-development** - versions, and what a website is relative to an app, lib or theme.
+- **kademi-ksync** - the checkout itself: getting the site onto your machine, syncing your changes
+  to the account, and anything KSync is not doing.
 - **kademi-journeys** - when the KCode a page uses should reach a field that does not exist yet.
 - **kademi-api-reference** - to confirm a `$services` or `$formatter` call before a page relies on it.
