@@ -4,7 +4,7 @@ description: Use for anything involving KSync (the ksync3 command), which connec
 license: Apache-2.0
 metadata:
   author: kademi
-  version: "0.1"
+  version: "0.2"
 ---
 
 # KSync
@@ -26,7 +26,9 @@ It looks like git and is not git. The differences are the whole skill:
 | `git check-ignore` | `ksync3 check-ignore`, same exit codes |
 
 Use git as well, for the things git is for - history, branches, review. The two do not know about
-each other and do not conflict. Put `.ksync/` in `.gitignore`.
+each other and do not conflict. Put `.ksync/` in `.gitignore`. Newer builds of ksync3 also write a
+`.gitignore` and an `.ignore` inside `.ksync/`, so git, ripgrep and editors leave it alone, but older
+builds do not, and `.ksync/` can hold a login token.
 
 ## Install
 
@@ -50,12 +52,16 @@ modern way, `ksync3 checkout --url ...`.
 ## Sign in
 
 ```bash
-ksync3 login --oauth --url https://acme.admin.kademi.us
+ksync3 login --url https://acme.admin.kademi.us
 ```
 
 A browser opens, you approve, and the tokens are stored per site - so every checkout of that site
 is signed in at once, and refreshing happens by itself. Inside a checkout the `--url` is already
-known, so it is just `ksync3 login --oauth`.
+known, so it is just `ksync3 login`.
+
+When the site does not offer OAuth2, or the browser sign-in does not complete, `login` falls back
+to asking for a username and password. `--oauth` means browser only, with no fallback; `--user`
+skips the browser and signs in with a password.
 
 Two things must be true on the account, and neither is something you can fix from your machine.
 If login fails, ask an account administrator to:
@@ -67,15 +73,17 @@ The sign-in redirect comes back to `127.0.0.1` on a random port. Loopback is alw
 there is nothing to add to an allow list.
 
 For CI, or anywhere a browser is not possible, use a KOAuth2 api key instead. It is used exactly as
-given, is never written to disk, and needs no login:
+given, is never written to disk, and needs no login. Put it in the environment, or pass it with
+`--token` (`--auth` takes one too):
 
 ```bash
 export KSYNC_TOKEN=ko2_ak_...
 ```
 
-`ksync3 logout` discards the stored sign-in for a site. It reminds you if `KSYNC_TOKEN` is still
-set in the environment, because otherwise the next command still authenticates and the logout
-looks broken.
+`ksync3 logout` discards the stored sign-in for a site, and where the site supports it also revokes
+the tokens and deletes this machine's client registration on the server. It reminds you if
+`KSYNC_TOKEN` is still set in the environment, because otherwise the next command still
+authenticates and the logout looks broken.
 
 ## The checkout url
 
@@ -148,12 +156,19 @@ ksync3 push    # send local changes
 `sync` and `push` only go one way - **neither of them brings server-side changes down.** Only
 `pull` does that, and `pull` is the only command that rewrites your local files.
 
+After each push the server is asked whether it has everything the new version needs, and anything
+missing is uploaded. That walks the whole version: on a large repository `push` can take several
+minutes to return, though the version went live at the start of that wait, so stopping it is
+safe. `sync` does the same check in the background.
+
 Two things about `sync` that are not obvious until they bite:
 
 - **One ksync3 at a time.** The hash cache is locked single-writer, so running `pull` or `push`
   while `sync` is going stops with *"Another ksync3 is already working on ..."*. Stop `sync` first.
   The lock covers the repository, not just the version, so a `sync` in one checkout blocks a second
-  checkout of the same repository even on a different version.
+  checkout of the same repository even on a different version. The checkout's object store has its
+  own lock, shared with `ksync` (the Go client): *"Another ksync3 or ksync is already using
+  .../.ksync/objects"* means one of them is still running in that folder.
 - **Never let anything write inside the checkout while `sync` runs.** It syncs whatever appears
   there, your build output and your log files included - and if the writer is the sync process
   itself, say a log you redirected into the folder, each push grows the log, which triggers
@@ -177,16 +192,25 @@ Getting this wrong is how an agent or a CI job hangs forever on a question nobod
   nobody is looking at. Pass `--conflictmode console`, or set `KSYNC_NON_INTERACTIVE=1`.
 - **Then close stdin**: `ksync3 pull < /dev/null`. `pull` is the command that can meet a conflict,
   and once it is asking on the terminal, no input means it leaves the file alone - both versions
-  untouched, a warning logged - instead of blocking on a prompt forever. Closing stdin does nothing
-  on its own; it only answers a prompt the previous bullet has to have chosen.
+  untouched, a warning logged - instead of blocking on a prompt forever. The pull then exits 1 and
+  `push` stays blocked until a later pull settles the conflict. Closing stdin does nothing on its
+  own; it only answers a prompt the previous bullet has to have chosen.
+- **Check the exit code of every command that talks to the server, and stop on a 1.**
+  `checkout`, `pull` and `push` exit 1 when they did not complete - the server could not be reached,
+  the push was refused because the remote moved, some files could not be moved, a conflict was left
+  unresolved - and 0 otherwise.
+  `verify` and `publish` exit 1 when something is still missing or still failed. The tables are in
+  [references/commands.md](references/commands.md).
 - Authenticate with `KSYNC_TOKEN`, not with an interactive login.
 - `--logformat kv` gives parseable output; `--debug` gives the detail when something is wrong.
 - **`sync`, `push`, `pull` and `checkout` raise OS desktop notifications** when they enter a
   problem state - a refused push, a lost connection. There is no flag to turn them off: `--notray`
   hides only the tray icon, and only for `sync`. Each retry is a fresh process entering the problem
   state afresh, so a loop that retries a failing push pops one notification per attempt on
-  someone's desktop. Check the exit code and stop, rather than retrying blind. The other commands
-  - `login`, `logout`, `ignore`, `check-ignore`, `verify`, `publish` - are silent.
+  someone's desktop - another reason to stop on the first 1 rather than retrying blind. `sync`
+  needs no loop: it retries an unreachable or busy server by itself, backing off to every 10
+  minutes, and notifies once. The other commands - `login`, `logout`, `ignore`, `check-ignore`,
+  `verify`, `publish` - are silent.
 - **Those same four write `.ksync/status.json`**, not just `sync` - read its `busy` and `problem`
   booleans, or the `state` (`IDLE`, `BLOCKED`, `OFFLINE`, `FAILED`), rather than scraping the log.
 
@@ -218,10 +242,16 @@ It names the rule, the file it came from and the line number, and exits 0 if the
 
 ## The .ksync directory
 
-`checkout` writes `.ksync/` for its own bookkeeping. **Never write anything inside it.** `blobs`
-and `hashes` are its record of what the server already has; editing them does not change the
-account, it corrupts the record, and the next push or pull misbehaves. Change a checkout by running
-ksync3, never by editing its files.
+`checkout` writes `.ksync/` for its own bookkeeping. **Never write anything inside it.**
+`objects/` holds every file's content as pack files, in a format shared with `ksync` (the Go
+client); editing them does not change the account, and damaged content is only thrown away and
+fetched again. Change a checkout by running ksync3, never by editing its files.
+
+Checkouts made by older builds keep that content elsewhere, so do not be surprised to find no
+`objects/`. The oldest have `blobs` and `hashes` directories inside `.ksync/`. Later ones keep it
+outside the checkout, in a cache shared by every checkout of the repository - `~/.cache/ksync/objects`
+on Linux, `~/Library/Caches/ksync/objects` on macOS, `%LocalAppData%\ksync\objects` on Windows.
+Either is moved into `.ksync/objects/` the first time a newer ksync3 runs there.
 
 One value in it is worth reading - `url` in `.ksync/ksync.properties`, which tells you which
 account, repository and version this folder is connected to:
@@ -241,8 +271,11 @@ read, quote or copy it. Checkouts predating that change still carry a `userUrlHa
 | What you see | What it means | What to do |
 |---|---|---|
 | `Remote repository has changed, please pull` | Someone else pushed since your last sync. The push was refused, nothing was lost | `ksync3 pull`, check what arrived, then push |
-| `Not logged in to <host>` | No stored tokens for this site | `ksync3 login --oauth`, or set `KSYNC_TOKEN` |
-| `The session for <host> has expired and could not be renewed` | The refresh token is dead too | `ksync3 login --oauth` again |
+| `N conflicts left unresolved. Pull again to answer them, or use --localwins to keep yours` | A pull met conflicts nobody answered, usually in an unattended run. Your files are untouched and push stays blocked | `ksync3 pull` again where someone can answer each one. `--localwins` only if discarding the other side's change is what you want |
+| `Not logged in to <host>` | No stored tokens for this site | `ksync3 login`, or set `KSYNC_TOKEN` |
+| `The session for <host> has expired and could not be renewed` | The refresh token is dead too | `ksync3 login` again |
+| `The server refused the new version and kept the old one` | On a website, usually `WEB-INF/settings.xml` naming an app or version the Marketplace does not have | Fix `settings.xml` and push again; the account's server log names the app |
+| `The server is missing N objects for this version` | The version is live but incomplete, and this checkout does not have the missing content either | Push from a checkout that has it, or `ksync3 verify` there |
 | `is not a repository branch: it answered with a page` | Usually a `/websites/` url copied from the console, where `/repositories/` is needed | Fix the url, then `checkout` again |
 | `is not a ksync checkout, so there is no url to sync with` | You are in the wrong directory | `cd` to the checkout, or pass `--url` |
 | `No version of <repo> has a version number for a name` | The repository has only hand-named branches, so there is no "latest" to follow | Point `--url` at one of the versions it lists |
@@ -250,20 +283,22 @@ read, quote or copy it. Checkouts predating that change still carry a `userUrlHa
 | A saved change has no effect on the site | Very often the edit landed on a version the account is not running | Compare `url` in `.ksync/ksync.properties` with the version shown against the app at **Websites & apps > Apps** before debugging any code |
 | `Remote repository has changed` when nobody else is working, and it comes and goes between runs | The account is answering with two different branch heads between requests | Retry; if it keeps alternating, report it. **Do not reach for `--localwins`** - against whichever head is stale it overwrites the good one with an older tree |
 | `Another ksync3 is already working on <url>` | Exactly that, usually a `sync` left running in another terminal | Stop the other one. Two checkouts of the same repository share the cache, so a `sync` in either blocks the other |
+| `Another ksync3 or ksync is already using .../.ksync/objects` | A ksync3 or ksync (the Go client) is running in this checkout | Stop it, or wait for it to finish |
 | `sync` is running, saves are happening, nothing reaches the account | It went `BLOCKED` earlier and is refusing every push since | Check `problem` in `.ksync/status.json`; stop `sync`, pull, restart it |
 | `sync` pushes over and over with no edits from you | Something inside the checkout is being written - often a log or build output, and if it is the sync log the pushes feed themselves | Move it outside the checkout or add it to `.ksyncignore` |
 | A file never appears on the account | An ignore rule | `ksync3 check-ignore <path>` |
-| Pages break after a publish, or files 404 | The version is missing content on the server | `ksync3 verify` lists the files whose content is missing, and exits 1 when anything is |
+| Pages break after a publish, or files 404 | The version is missing content on the server | `ksync3 verify` uploads whatever this checkout has, lists what is still missing, and exits 1 when anything is |
 
 Nothing here is recovered by deleting `.ksync` and starting again - a fresh `checkout` into an
 empty directory is the honest reset, and it costs only the download.
 
 ## Publishing
 
-`ksync3 publish` uploads apps, libs and themes to the Marketplace in bulk. It is a different job
-from syncing, and it is not needed to use an app inside your own account.
+`ksync3 publish` uploads apps, libs, themes and recipes to the Marketplace in bulk. It is a
+different job from syncing, and it is not needed to use an app inside your own account.
 
-Run it from the folder holding the `apps`, `libs` and `themes` directories, and name what to send:
+Run it from the folder holding the `apps`, `libs`, `themes` and `recipes` directories, and name
+what to send:
 
 ```bash
 ksync3 publish --appids leadman-lib,payment-lib --report   # dry run first
@@ -273,6 +308,11 @@ ksync3 publish --appids leadman-lib,payment-lib
 Each asset must have exactly one version folder inside it. `--force` republishes something already
 published; it is for recovery, not for routine use - bump the version instead. Cutting versions and
 the console side of publishing belong to the `kademi-app-development` skill.
+
+A failed asset is tried again a few times before the run counts it as failed. Where some things must
+be live before others, a `ksync.toml` in the folder sets the order - and when it exists, folders it
+does not list are not published. Read the publish section of
+[references/commands.md](references/commands.md) before writing one.
 
 ## Every command and option
 
